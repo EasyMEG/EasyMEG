@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 24-Aug-2016 09:35:17
+% Last Modified by GUIDE v2.5 25-Aug-2016 00:14:01
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -67,18 +67,6 @@ global currentData;
 
 dataSet = [];
 currentData = 0;
-
-font = get(groot,'FixedWidthFontName');
-set(handles.text1,'FontName',font);
-set(handles.text2,'FontName',font);
-set(handles.text3,'FontName',font);
-set(handles.text4,'FontName',font);
-set(handles.text5,'FontName',font);
-set(handles.text6,'FontName',font);
-set(handles.text7,'FontName',font);
-set(handles.text8,'FontName',font);
-set(handles.text9,'FontName',font);
-set(handles.text10,'FontName',font);
 
 
 % --- Outputs from this function are returned to the command line.
@@ -274,14 +262,13 @@ set(handles.panelMain,'Title','Processing...');
 
 set(handles.text1, 'String','');
 set(handles.text2, 'String','');
-set(handles.text3, 'String','');
-set(handles.text4, 'String','');
-set(handles.text5 ,'String','Please wait, do not perform any operations.');
+set(handles.text3, 'String','Please wait');
+set(handles.text4, 'String','Operation is in progress');
+set(handles.text5 ,'String','Do not perform any  operations');
 set(handles.text6 ,'String','');
 set(handles.text7 ,'String','');
 set(handles.text8 ,'String','');
 set(handles.text9 ,'String','');
-set(handles.text10,'String','');
 
 drawnow();
 
@@ -302,19 +289,186 @@ if isempty(dataSet)
     set(handles.text7 ,'String','');
     set(handles.text8 ,'String','');
     set(handles.text9 ,'String','');
-    set(handles.text10,'String','');
+
 else
     set(handles.panelMain,'Title',strcat('Dataset  #',num2str(currentData),'  --',dataSet{currentData,2}));
     set(handles.text1, 'String','');
-    set(handles.text2, 'String',['Sampling rate            ',num2str(dataSet{currentData}.hdr.Fs)]);
-    set(handles.text3, 'String',['Number of channels       ',num2str(dataSet{currentData}.hdr.nChans)]);
-    set(handles.text4, 'String',['Number of samples        ',num2str(dataSet{currentData}.hdr.nSamples)]);
-    set(handles.text5 ,'String',['Number of trails         ',num2str(dataSet{currentData}.hdr.nTrials)]);
-    set(handles.text6 ,'String',['Coordsys type            ',dataSet{currentData}.grad.coordsys]);
-    set(handles.text7 ,'String',['Data format              ',dataSet{currentData}.grad.type]);
-    set(handles.text8 ,'String',['Unit                     ',dataSet{currentData}.grad.unit]);
+    set(handles.text2, 'String',['Sampling rate                   ',num2str(dataSet{currentData}.hdr.Fs)]);
+    set(handles.text3, 'String',['Number of channels              ',num2str(dataSet{currentData}.hdr.nChans)]);
+    set(handles.text4, 'String',['Number of samples               ',num2str(dataSet{currentData}.hdr.nSamples)]);
+    set(handles.text5 ,'String',['Number of trails                ',num2str(dataSet{currentData}.hdr.nTrials)]);
+    set(handles.text6 ,'String',['Coordsys type                   ',dataSet{currentData}.grad.coordsys]);
+    set(handles.text7 ,'String',['Data format                     ',dataSet{currentData}.grad.type]);
+    set(handles.text8 ,'String',['Unit                            ',dataSet{currentData}.grad.unit]);
     set(handles.text9 ,'String','');
-    set(handles.text10,'String','');
+
 end
 
 drawnow();
+
+
+% --------------------------------------------------------------------
+function menuPreprocessing_Callback(hObject, eventdata, handles)
+% hObject    handle to menuPreprocessing (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menuLowPass_Callback(hObject, eventdata, handles)
+% hObject    handle to menuLowPass (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+run('LowPassFilter.m');
+
+% --------------------------------------------------------------------
+function menuHighPass_Callback(hObject, eventdata, handles)
+% hObject    handle to menuHighPass (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+run('HighPassFilter.m');
+
+
+% --------------------------------------------------------------------
+function menuBandPass_Callback(hObject, eventdata, handles)
+% hObject    handle to menuBandPass (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+run('BandPassFilter.m');
+
+
+% --------------------------------------------------------------------
+function menuBandStop_Callback(hObject, eventdata, handles)
+% hObject    handle to menuBandStop (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+run('BandStopFilter.m');
+
+% --------------------------------------------------------------------
+function menuVisualInspect_Callback(hObject, eventdata, handles)
+% hObject    handle to menuVisualInspect (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menuTrailByTrail_Callback(hObject, eventdata, handles)
+% hObject    handle to menuTrailByTrail (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+
+data = dataSet{currentData};
+[isOk, base, meg, eeg, ecg, eog, emg]=getAlim();
+
+if isOk
+    cfg          = [];
+    cfg.method   = 'trial';
+    
+    if base
+        cfg.alim = base;
+    end
+    if meg
+        cfg.megscale = meg;
+    end
+    if eeg
+        cfg.eegscale = eeg;
+    end
+    if ecg
+        cfg.ecgscale = ecg;
+    end
+    if eog
+        cfg.eogscale = eog;
+    end
+    if emg
+        cfg.emgscale = emg;
+    end
+    
+    data = ft_rejectvisual(cfg,data);
+    dataSet{currentData} = data;
+end
+
+
+% --------------------------------------------------------------------
+function menuChannelByChannel_Callback(hObject, eventdata, handles)
+% hObject    handle to menuChannelByChannel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+
+data = dataSet{currentData};
+[isOk, base, meg, eeg, ecg, eog, emg]=getAlim();
+
+if isOk
+    cfg          = [];
+    cfg.method   = 'channel';
+    
+    if base
+        cfg.alim = base;
+    end
+    if meg
+        cfg.megscale = meg;
+    end
+    if eeg
+        cfg.eegscale = eeg;
+    end
+    if ecg
+        cfg.ecgscale = ecg;
+    end
+    if eog
+        cfg.eogscale = eog;
+    end
+    if emg
+        cfg.emgscale = emg;
+    end
+    
+    data = ft_rejectvisual(cfg,data);
+    dataSet{currentData} = data;
+end
+
+% --------------------------------------------------------------------
+function MenuBySummary_Callback(hObject, eventdata, handles)
+% hObject    handle to MenuBySummary (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+
+data = dataSet{currentData};
+[isOk, base, meg, eeg, ecg, eog, emg]=getAlim();
+
+if isOk
+    cfg          = [];
+    cfg.method   = 'summary';
+    
+    if base
+        cfg.alim = base;
+    end
+    if meg
+        cfg.megscale = meg;
+    end
+    if eeg
+        cfg.eegscale = eeg;
+    end
+    if ecg
+        cfg.ecgscale = ecg;
+    end
+    if eog
+        cfg.eogscale = eog;
+    end
+    if emg
+        cfg.emgscale = emg;
+    end
+    
+    data = ft_rejectvisual(cfg,data);
+    dataSet{currentData} = data;
+end
+
+% --------------------------------------------------------------------
+function menuBrowseMark_Callback(hObject, eventdata, handles)
+% hObject    handle to menuBrowseMark (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+run('VisualInspect');
