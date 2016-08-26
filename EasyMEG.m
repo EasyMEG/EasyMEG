@@ -330,9 +330,13 @@ end
 if isempty(dataSet)
     set(handles.menuPreprocessing,'Enable','Off');
     set(handles.menuDatasets,'Enable','Off');
+    set(handles.menuSaveAsFieldTripData,'Enable','Off');
+    set(handles.menuSaveAsEasyMegData,'Enable','Off');
 else
     set(handles.menuPreprocessing,'Enable','On');
     set(handles.menuDatasets,'Enable','On');
+    set(handles.menuSaveAsFieldTripData,'Enable','On');
+    set(handles.menuSaveAsEasyMegData,'Enable','On');
     
     % delete 'Datasets' menus 
     h = findobj(handles.menuDatasets,'UserData','dataSetList');
