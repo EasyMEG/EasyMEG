@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 25-Aug-2016 23:52:24
+% Last Modified by GUIDE v2.5 26-Aug-2016 11:05:53
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -613,3 +613,52 @@ function cbData10(handles)
 global currentData;
 currentData = 10;
 updateWindow(handles);
+
+
+% --------------------------------------------------------------------
+function menuRedefineTrails_Callback(hObject, eventdata, handles)
+% hObject    handle to menuRedefineTrails (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menuRedefineTrailsEvent_Callback(hObject, eventdata, handles)
+% hObject    handle to menuRedefineTrailsEvent (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+
+if ~isempty(dataSet{currentData}.cfg.previous)
+    ed = errordlg('This function need the origin data. You may try to reload this dataset.','Error');
+    waitfor(ed);
+else
+    run('RedefineTrails.m');
+end
+
+% --------------------------------------------------------------------
+function menuSegmentData_Callback(hObject, eventdata, handles)
+% hObject    handle to menuSegmentData (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+
+data = dataSet{currentData};
+
+prompt={'Trail length (s):','Overlap (0-1):'};
+name='Segment Data';
+numlines=1;
+defaultanswer={'2','0'};
+answer = inputdlg(prompt,name,numlines,defaultanswer);
+trailLength = str2double(answer{1});
+overLap = str2double(answer{2});
+
+cfg= [];
+cfg.length  = trailLength;
+cfg.overlap = overLap;
+
+data = ft_redefinetrial( cfg,data );
+
+dataSet{currentData} = data;

@@ -22,7 +22,7 @@ function varargout = LowPassFilter(varargin)
 
 % Edit the above text to modify the response to help LowPassFilter
 
-% Last Modified by GUIDE v2.5 25-Aug-2016 19:36:05
+% Last Modified by GUIDE v2.5 26-Aug-2016 11:47:42
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -207,3 +207,13 @@ function checkboxEMG_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkboxEMG
+
+
+% --- Executes when user attempts to close figure1.
+function figure1_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: delete(hObject) closes the figure
+delete(hObject);
