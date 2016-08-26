@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 25-Aug-2016 00:14:01
+% Last Modified by GUIDE v2.5 25-Aug-2016 23:52:24
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -68,6 +68,8 @@ global currentData;
 dataSet = [];
 currentData = 0;
 
+updateWindow(handles);
+
 
 % --- Outputs from this function are returned to the command line.
 function varargout = EasyMEG_OutputFcn(hObject, eventdata, handles) 
@@ -96,6 +98,12 @@ function menuCTFData_Callback(hObject, eventdata, handles)
 global dataSet;
 global currentData;
 
+if length(dataSet)>9
+    ed = errordlg('You can only have 10 datasets in memory.','Error');
+    waitfor(ed);
+    return
+end
+
 dataDir = uigetdir('.','Pick a CTF data directory');
 if dataDir~=0
     dispWait(handles)
@@ -108,7 +116,7 @@ if dataDir~=0
        
     dataSet{currentData,2} = getDatasetName();
     
-    dispDatasetInfo(handles);
+    updateWindow(handles);
 end
 
 function dataName = getDatasetName(varargin)
@@ -155,6 +163,12 @@ function menuLoadFieldTripData_Callback(hObject, eventdata, handles)
 global dataSet;
 global currentData;
 
+if length(dataSet)>9
+    ed = errordlg('You can only have 10 datasets in memory.','Error');
+    waitfor(ed);
+    return
+end
+
 [filename, pathname]  = uigetfile('*.mat', 'Pick a FieldTrip dataset (.mat file)');
 dataDir = fullfile(pathname, filename);
 
@@ -170,7 +184,7 @@ else
     
     dataSet{currentData,2} = getDatasetName(dataName.name);
     
-    dispDatasetInfo(handles);
+    updateWindow(handles);
 end
 
 
@@ -189,18 +203,25 @@ dataDir = fullfile(pathname, filename);
 if isequal(filename,0) || isequal(pathname,0)
     disp('Loading canceled...');
 else
+    dataName = whos('-file',dataDir);
+    
+    if dataName.size(1)>10
+        ed = errordlg('You can only have 10 datasets in memory.','Error');
+        waitfor(ed);
+        return
+    end
+    
     dispWait(handles)
     
-    dataName = whos('-file',dataDir);
     if isequal(dataName.name,'dataSet')
         load(dataDir);
         currentData = length(dataSet);
 
-        dispDatasetInfo(handles);
+        updateWindow(handles);
     else
         ed = errordlg('This is not a EasyMEG dataset.');
         waitfor(ed);
-        dispDatasetInfo(handles);
+        updateWindow(handles);
     end
 end
 
@@ -217,7 +238,7 @@ if isequal(filename,0) || isequal(pathname,0)
 else
    dispWait(handles)
    save(fullfile(pathname, filename),'dataSet','-v7.3');
-   dispDatasetInfo(handles);
+   updateWindow(handles);
 end
 
 
@@ -239,7 +260,7 @@ if dir~=0
             errordlg(me.message,'Error');
         end
     end
-    dispDatasetInfo(handles);
+    updateWindow(handles);
 end
 
 
@@ -273,11 +294,12 @@ set(handles.text9 ,'String','');
 drawnow();
 
 
-function dispDatasetInfo(handles)
+function updateWindow(handles)
 % handles    structure with handles and user data (see GUIDATA)
 global dataSet;
 global currentData;
 
+% display info on the main window
 if isempty(dataSet)
     set(handles.panelMain,'Title','Please load or import data');
     set(handles.text1, 'String','');
@@ -304,8 +326,34 @@ else
 
 end
 
-drawnow();
+% update menu
+if isempty(dataSet)
+    set(handles.menuPreprocessing,'Enable','Off');
+    set(handles.menuDatasets,'Enable','Off');
+else
+    set(handles.menuPreprocessing,'Enable','On');
+    set(handles.menuDatasets,'Enable','On');
+    
+    % delete 'Datasets' menus 
+    h = findobj(handles.menuDatasets,'UserData','dataSetList');
+    delete(h);
+    
+    % create new 'Datasets' menus
+    for i=1:size(dataSet,1)
+        uimenu(handles.menuDatasets,...
+                    'Label',dataSet{i,2},...
+                    'Tag',['cbData',num2str(i)],...
+                    'Checked','off',...
+                    'Separator','On',...
+                    'UserData','dataSetList',...
+                    'Callback',@(hObject,eventdata)EasyMEG(['cbData',num2str(i)],guidata(hObject)));
+    end
+    h = findobj(handles.menuDatasets,'Tag',['cbData',num2str(currentData)]');
+    set(h,'Checked','On');
+    
+end
 
+drawnow();
 
 % --------------------------------------------------------------------
 function menuPreprocessing_Callback(hObject, eventdata, handles)
@@ -472,3 +520,96 @@ function menuBrowseMark_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 run('VisualInspect');
+
+
+% --------------------------------------------------------------------
+function menuDatasets_Callback(hObject, eventdata, handles)
+% hObject    handle to menuDatasets (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% --------------------------------------------------------------------
+function menuRemoveCurrentDataset_Callback(hObject, eventdata, handles)
+% hObject    handle to menuRemoveCurrentDataset (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+
+btnName = questdlg('Remove current dataset?', ...
+                     'Remove dataset', ...
+                     'Yes','Cancel','Cancel');
+if isequal(btnName,'Yes')
+    dataSet(currentData,:) = [];
+    currentData = length(dataSet);
+end
+updateWindow(handles);
+
+
+
+% --------------------------------------------------------------------
+function menuRemoveAllDatasets_Callback(hObject, eventdata, handles)
+% hObject    handle to menuRemoveAllDatasets (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+
+btnName = questdlg('Remove all dataset?', ...
+                     'Remove dataset', ...
+                     'Yes', 'Cancel','Cancel');
+if isequal(btnName,'Yes')
+    dataSet = [];
+    currentData = length(dataSet);
+end
+updateWindow(handles);
+
+function cbData1(handles)
+global currentData;
+currentData = 1;
+updateWindow(handles);
+
+function cbData2(handles)
+global currentData;
+currentData = 2;
+updateWindow(handles);
+
+function cbData3(handles)
+global currentData;
+currentData = 3;
+updateWindow(handles);
+
+function cbData4(handles)
+global currentData;
+currentData = 4;
+updateWindow(handles);
+
+function cbData5(handles)
+global currentData;
+currentData = 5;
+updateWindow(handles);
+
+function cbData6(handles)
+global currentData;
+currentData = 6;
+updateWindow(handles);
+
+function cbData7(handles)
+global currentData;
+currentData = 7;
+updateWindow(handles);
+
+function cbData8(handles)
+global currentData;
+currentData = 8;
+updateWindow(handles);
+
+function cbData9(handles)
+global currentData;
+currentData = 9;
+updateWindow(handles);
+
+function cbData10(handles)
+global currentData;
+currentData = 10;
+updateWindow(handles);
