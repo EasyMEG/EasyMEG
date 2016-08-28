@@ -749,6 +749,20 @@ function menuSegmentData_Callback(hObject, eventdata, handles)
 global dataSet;
 global currentData;
 
+data = dataSet{currentData}.data;
+
+if ~isempty(data.cfg.previous)
+    ed = errordlg('This function need the origin data. You may try to reload this dataset.','Error');
+    waitfor(ed);
+    return
+end
+
+if isequal(data.cfg.continuous,'no')
+    ed = errordlg('The current dataset is not continuous','Error');
+    waitfor(ed);
+    return
+end
+
 prompt={'Trail length (s):','Overlap (0-1):'};
 name='Segment Data';
 numlines=1;
@@ -758,14 +772,20 @@ answer = inputdlg(prompt,name,numlines,defaultanswer);
 
 if ~isempty(answer{1})&&~isempty(answer{2})
     dispWait(handles);
-    data = dataSet{currentData}.data;
     trailLength = str2double(answer{1});
     overLap = str2double(answer{2});
 
+    if overLap<0||overLap>=1
+        ed = errordlg('The value of ''overlap'' must >=0 and <1','Error');
+        waitfor(ed);
+        return
+    end
+    
     cfg= [];
+    cfg.trials = 'all';
     cfg.length  = trailLength;
     cfg.overlap = overLap;
-    
+
     data = ft_redefinetrial( cfg,data );
     dataSet{currentData}.data = data;
     updateWindow(handles);
