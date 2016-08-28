@@ -98,7 +98,7 @@ function menuCTFData_Callback(hObject, eventdata, handles)
 global dataSet;
 global currentData;
 
-if length(dataSet)>9
+if size(dataSet,1)>9
     ed = errordlg('You can only have 10 datasets in memory.','Error');
     waitfor(ed);
     return
@@ -106,7 +106,7 @@ end
 
 dataDir = uigetdir('.','Pick a CTF data directory');
 if dataDir~=0
-    dispWait(handles)
+    dispWait(handles);
     
     cfg = [];
     cfg.dataset = dataDir;
@@ -143,7 +143,7 @@ if ~isvarname(dname)
 end
 
 if size(dataSet,2)>1
-    for i=1:length(dataSet)
+    for i=1:size(dataSet,1)
         if isequal(dname,dataSet{i,2})
             ed = errordlg('Invalid dataset name. The name you entered is already existed.');
             waitfor(ed);
@@ -163,7 +163,7 @@ function menuLoadFieldTripData_Callback(hObject, eventdata, handles)
 global dataSet;
 global currentData;
 
-if length(dataSet)>9
+if size(dataSet,1)>9
     ed = errordlg('You can only have 10 datasets in memory.','Error');
     waitfor(ed);
     return
@@ -175,7 +175,7 @@ dataDir = fullfile(pathname, filename);
 if isequal(filename,0) || isequal(pathname,0)
     disp('Loading canceled...');
 else
-    dispWait(handles)
+    dispWait(handles);
     
     load(dataDir);
     dataName = whos('-file',dataDir);
@@ -211,11 +211,11 @@ else
         return
     end
     
-    dispWait(handles)
+    dispWait(handles);
     
     if isequal(dataName.name,'dataSet')
         load(dataDir);
-        currentData = length(dataSet);
+        currentData = size(dataSet,1);
 
         updateWindow(handles);
     else
@@ -236,7 +236,7 @@ global dataSet;
 if isequal(filename,0) || isequal(pathname,0)
    disp('Save file canceld.');
 else
-   dispWait(handles)
+   dispWait(handles);
    save(fullfile(pathname, filename),'dataSet','-v7.3');
    updateWindow(handles);
 end
@@ -252,7 +252,7 @@ global dataSet;
 dir = uigetdir('','Pick a folder to save datasets');
 if dir~=0
     dispWait(handles);
-    for i = 1:length(dataSet)
+    for i = 1:size(dataSet,1)
         eval([dataSet{i,2},'=dataSet{i,1}']);
         try
             save(fullfile(dir,dataSet{i,2}) ,dataSet{i,2},'-v7.3');
@@ -299,6 +299,7 @@ function updateWindow(handles)
 global dataSet;
 global currentData;
 
+
 % display info on the main window
 if isempty(dataSet)
     set(handles.panelMain,'Title','Please load or import data');
@@ -313,15 +314,18 @@ if isempty(dataSet)
     set(handles.text9 ,'String','');
 
 else
-    set(handles.panelMain,'Title',strcat('Dataset  #',num2str(currentData),'  --',dataSet{currentData,2}));
+    data = dataSet{currentData,1};
+    dataName = dataSet(currentData,2);
+    
+    set(handles.panelMain,'Title',strcat('Dataset  #',num2str(currentData),'  --',dataName));
     set(handles.text1, 'String','');
-    set(handles.text2, 'String',['Sampling rate                   ',num2str(dataSet{currentData}.hdr.Fs)]);
-    set(handles.text3, 'String',['Number of channels              ',num2str(dataSet{currentData}.hdr.nChans)]);
-    set(handles.text4, 'String',['Number of samples               ',num2str(dataSet{currentData}.hdr.nSamples)]);
-    set(handles.text5 ,'String',['Number of trails                ',num2str(dataSet{currentData}.hdr.nTrials)]);
-    set(handles.text6 ,'String',['Coordsys type                   ',dataSet{currentData}.grad.coordsys]);
-    set(handles.text7 ,'String',['Data format                     ',dataSet{currentData}.grad.type]);
-    set(handles.text8 ,'String',['Unit                            ',dataSet{currentData}.grad.unit]);
+    set(handles.text2, 'String',['Sampling rate                   ',num2str(data.fsample)]);
+    set(handles.text3, 'String',['Number of channels              ',num2str(data.hdr.nChans)]);
+    set(handles.text4, 'String',['Number of samples               ',num2str(data.hdr.nSamples*data.hdr.nTrials)]);
+    set(handles.text5 ,'String',['Number of trails                ',num2str(size(data.trial,2))]);
+    set(handles.text6 ,'String',['Coordsys type                   ',data.grad.coordsys]);
+    set(handles.text7 ,'String',['Data format                     ',data.grad.type]);
+    set(handles.text8 ,'String',['Unit                            ',data.grad.unit]);
     set(handles.text9 ,'String','');
 
 end
@@ -371,22 +375,72 @@ function menuLowPass_Callback(hObject, eventdata, handles)
 % hObject    handle to menuLowPass (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-run('LowPassFilter.m');
+global dataSet;
+global currentData;
+
+[channel , cfg] = LowPassFilter();
+
+if ~isempty(cfg)
+    dispWait(handles);
+    
+    data = dataSet{currentData,1};
+
+    cfg.channel = ft_channelselection(channel,data.label);
+    data = ft_preprocessing(cfg,data);
+
+    dataSet{currentData,1} = data;
+
+    updateWindow(handles);
+end
+
+
 
 % --------------------------------------------------------------------
 function menuHighPass_Callback(hObject, eventdata, handles)
 % hObject    handle to menuHighPass (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-run('HighPassFilter.m');
+global dataSet;
+global currentData;
 
+[channel , cfg] = HighPassFilter();
+
+if ~isempty(cfg)
+    dispWait(handles);
+    
+    data = dataSet{currentData,1};
+
+    cfg.channel = ft_channelselection(channel,data.label);
+    data = ft_preprocessing(cfg,data);
+
+    dataSet{currentData,1} = data;
+
+    updateWindow(handles);
+end
 
 % --------------------------------------------------------------------
 function menuBandPass_Callback(hObject, eventdata, handles)
 % hObject    handle to menuBandPass (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-run('BandPassFilter.m');
+global dataSet;
+global currentData;
+
+[channel , cfg] = BandPassFilter();
+
+if ~isempty(cfg)
+    dispWait(handles);
+    
+    data = dataSet{currentData,1};
+
+    cfg.channel = ft_channelselection(channel,data.label);
+    data = ft_preprocessing(cfg,data);
+
+    dataSet{currentData,1} = data;
+
+    updateWindow(handles);
+end
+
 
 
 % --------------------------------------------------------------------
@@ -394,7 +448,25 @@ function menuBandStop_Callback(hObject, eventdata, handles)
 % hObject    handle to menuBandStop (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-run('BandStopFilter.m');
+%run('BandStopFilter.m');
+global dataSet;
+global currentData;
+
+[channel , cfg] = BandStopFilter();
+
+if ~isempty(cfg)
+    dispWait(handles);
+    
+    data = dataSet{currentData,1};
+
+    cfg.channel = ft_channelselection(channel,data.label);
+    data = ft_preprocessing(cfg,data);
+
+    dataSet{currentData,1} = data;
+
+    updateWindow(handles);
+end
+
 
 % --------------------------------------------------------------------
 function menuVisualInspect_Callback(hObject, eventdata, handles)
@@ -436,9 +508,12 @@ if isOk
     if emg
         cfg.emgscale = emg;
     end
+    dispWait(handles);
     
     data = ft_rejectvisual(cfg,data);
     dataSet{currentData} = data;
+    updateWindow(handles);
+
 end
 
 
@@ -475,9 +550,10 @@ if isOk
     if emg
         cfg.emgscale = emg;
     end
-    
+    dispWait(handles);
     data = ft_rejectvisual(cfg,data);
     dataSet{currentData} = data;
+    updateWindow(handles);
 end
 
 % --------------------------------------------------------------------
@@ -513,9 +589,10 @@ if isOk
     if emg
         cfg.emgscale = emg;
     end
-    
+    dispWait(handles);
     data = ft_rejectvisual(cfg,data);
     dataSet{currentData} = data;
+    updateWindow(handles);
 end
 
 % --------------------------------------------------------------------
@@ -523,7 +600,20 @@ function menuBrowseMark_Callback(hObject, eventdata, handles)
 % hObject    handle to menuBrowseMark (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-run('VisualInspect');
+%run('VisualInspect');
+global dataSet;
+global currentData;
+
+cfg = VisualInspect();
+if ~isempty(cfg)
+    dispWait(handles);
+    data = dataSet{currentData};
+    cfg = ft_databrowser(cfg,data);
+    data = ft_rejectartifact(cfg, data);
+    dataSet{currentData} = data;
+    updateWindow(handles);
+end
+
 
 
 % --------------------------------------------------------------------
@@ -545,7 +635,7 @@ btnName = questdlg('Remove current dataset?', ...
                      'Yes','Cancel','Cancel');
 if isequal(btnName,'Yes')
     dataSet(currentData,:) = [];
-    currentData = length(dataSet);
+    currentData = size(dataSet,1);
 end
 updateWindow(handles);
 
@@ -564,7 +654,7 @@ btnName = questdlg('Remove all dataset?', ...
                      'Yes', 'Cancel','Cancel');
 if isequal(btnName,'Yes')
     dataSet = [];
-    currentData = length(dataSet);
+    currentData = size(dataSet,1);
 end
 updateWindow(handles);
 
@@ -633,12 +723,21 @@ function menuRedefineTrailsEvent_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global dataSet;
 global currentData;
+data = dataSet{currentData,1};
 
 if ~isempty(dataSet{currentData}.cfg.previous)
     ed = errordlg('This function need the origin data. You may try to reload this dataset.','Error');
     waitfor(ed);
 else
-    run('RedefineTrails.m');
+    cfg = RedefineTrails();
+    if ~isempty(cfg)
+        dispWait(handles);
+        cfg.dataset = data.cfg.dataset;
+        cfg = ft_definetrial(cfg);
+        data = ft_preprocessing(cfg);
+        dataSet{currentData,1} = data;
+        updateWindow(handles);
+    end
 end
 
 % --------------------------------------------------------------------
@@ -649,20 +748,24 @@ function menuSegmentData_Callback(hObject, eventdata, handles)
 global dataSet;
 global currentData;
 
-data = dataSet{currentData};
-
 prompt={'Trail length (s):','Overlap (0-1):'};
 name='Segment Data';
 numlines=1;
 defaultanswer={'2','0'};
 answer = inputdlg(prompt,name,numlines,defaultanswer);
-trailLength = str2double(answer{1});
-overLap = str2double(answer{2});
 
-cfg= [];
-cfg.length  = trailLength;
-cfg.overlap = overLap;
 
-data = ft_redefinetrial( cfg,data );
+if ~isempty(answer{1})&&~isempty(answer{2})
+    dispWait(handles);
+    data = dataSet{currentData};
+    trailLength = str2double(answer{1});
+    overLap = str2double(answer{2});
 
-dataSet{currentData} = data;
+    cfg= [];
+    cfg.length  = trailLength;
+    cfg.overlap = overLap;
+
+    data = ft_redefinetrial( cfg,data );
+    dataSet{currentData} = data;
+    updateWindow(handles);
+end

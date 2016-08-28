@@ -54,12 +54,14 @@ function LowPassFilter_OpeningFcn(hObject, eventdata, handles, varargin)
 
 % Choose default command line output for LowPassFilter
 handles.output = hObject;
+handles.cfgchn = [];
+handles.cfgpreproc = [];
 
 % Update handles structure
 guidata(hObject, handles);
 
 % UIWAIT makes LowPassFilter wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
+uiwait(handles.figure1);
 
 
 % --- Outputs from this function are returned to the command line.
@@ -70,7 +72,10 @@ function varargout = LowPassFilter_OutputFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.output;
+varargout{1} = handles.cfgchn;
+varargout{2} = handles.cfgpreproc;
+
+delete(handles.figure1);
 
 
 
@@ -79,10 +84,6 @@ function btnOk_Callback(hObject, eventdata, handles)
 % hObject    handle to btnOk (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global dataSet;
-global currentData;
-
-data = dataSet{currentData,1};
 
 channel = [];
 
@@ -110,24 +111,23 @@ if get(handles.checkboxALL,'value')
     channel = 'all';
 end
 
-channel = ft_channelselection(channel,data.label);
+handles.cfgchn = channel;
 
 cfg = [];
 cfg.lpfilter = 'yes';
 cfg.lpfreq = str2double(get(handles.editLowPass,'String'));
-cfg.channel = channel;
-data = ft_preprocessing(cfg,data);
 
-dataSet{currentData,1} = data;
+handles.cfgpreproc = cfg;
+guidata(hObject, handles);
 
-close;
+uiresume(handles.figure1);
 
 % --- Executes on button press in btnCancel.
 function btnCancel_Callback(hObject, eventdata, handles)
 % hObject    handle to btnCancel (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-close;
+uiresume(handles.figure1);
 
 
 
@@ -216,4 +216,10 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: delete(hObject) closes the figure
-delete(hObject);
+if isequal(get(hObject, 'waitstatus'), 'waiting')
+% The GUI is still in UIWAIT, us UIRESUME
+    uiresume(hObject);
+else
+% The GUI is no longer waiting, just close it
+    delete(hObject);
+end

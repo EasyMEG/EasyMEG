@@ -51,7 +51,8 @@ function RedefineTrails_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to RedefineTrails (see VARARGIN)
-
+handles.output = hObject;
+handles.cfg = [];
 
 
 % Choose default command line output for RedefineTrails
@@ -89,7 +90,7 @@ set(handles.listboxEventType,'String',listEventType);
 set(handles.listboxEventValue,'String',listEventValue{1});
 
 % UIWAIT makes RedefineTrails wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
+uiwait(handles.figure1);
 
 
 % --- Outputs from this function are returned to the command line.
@@ -100,7 +101,8 @@ function varargout = RedefineTrails_OutputFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.output;
+varargout{1} = handles.cfg;
+delete(handles.figure1);
 
 
 function editEventType_Callback(hObject, eventdata, handles)
@@ -199,26 +201,19 @@ function btnOk_Callback(hObject, eventdata, handles)
 % hObject    handle to btnOk (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global dataSet;
-global currentData;
-
-data = dataSet{currentData};
 
 cfg                         = [];
-cfg.dataset                 = data.cfg.dataset;
 cfg.trialfun                = 'ft_trialfun_general';
 cfg.trialdef.eventtype      = get(handles.editEventType,'String');
 cfg.trialdef.eventvalue     = str2double(get(handles.editEventValue,'String')); % the value of the stimulus trigger for fully incongruent (FIC).
 cfg.trialdef.prestim        = str2double(get(handles.editPrestim,'String')); % in seconds
 cfg.trialdef.poststim       = str2double(get(handles.editPoststim,'String')); % in seconds
 
-cfg = ft_definetrial(cfg);
+handles.cfg = cfg;
 
-data = ft_preprocessing(cfg);
 
-dataSet{currentData} = data;
-
-close;
+guidata(hObject, handles);
+uiresume(handles.figure1);
 
 
 % --- Executes on button press in btnCancel.
@@ -226,7 +221,7 @@ function btnCancel_Callback(hObject, eventdata, handles)
 % hObject    handle to btnCancel (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-close;
+uiresume(handles.figure1);
 
 
 % --- Executes on selection change in listboxEventType.
@@ -284,7 +279,13 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: delete(hObject) closes the figure
-delete(hObject);
+if isequal(get(hObject, 'waitstatus'), 'waiting')
+% The GUI is still in UIWAIT, us UIRESUME
+    uiresume(hObject);
+else
+% The GUI is no longer waiting, just close it
+    delete(hObject);
+end
 
 % --------------------------------------------------------------------
 function menuEventType_Callback(hObject, eventdata, handles)
