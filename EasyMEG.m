@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 26-Aug-2016 11:05:53
+% Last Modified by GUIDE v2.5 28-Aug-2016 19:03:55
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -790,3 +790,36 @@ if ~isempty(answer{1})&&~isempty(answer{2})
     dataSet{currentData}.data = data;
     updateWindow(handles);
 end
+
+
+% --------------------------------------------------------------------
+function menuReloadAsContinuous_Callback(hObject, eventdata, handles)
+% hObject    handle to menuReloadAsContinuous (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+
+data = dataSet{currentData}.data;
+
+if ~isempty(data.cfg.previous)
+    ed = errordlg('This function need the origin data. You may try to reload this dataset.','Error');
+    waitfor(ed);
+    return
+end
+
+if isequal(data.cfg.continuous,'yes')
+    ed = errordlg('The current dataset is continuous','Error');
+    waitfor(ed);
+    return
+end
+
+dispWait(handles);
+
+cfg = [];
+cfg.continuous = 'yes';
+cfg.dataset = data.cfg.dataset;
+data = ft_preprocessing(cfg);
+dataSet{currentData}.data = data;
+
+updateWindow(handles);
