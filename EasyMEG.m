@@ -107,10 +107,17 @@ end
 dataDir = uigetdir('.','Pick a CTF data directory');
 if dataDir~=0
     dispWait(handles);
-    
+
     cfg = [];
     cfg.dataset = dataDir;
-    data = ft_preprocessing(cfg);
+    try
+        data = ft_preprocessing(cfg);
+    catch ep
+        ed = errordlg(ep.message,'Error');
+        waitfor(ed);
+        updateWindow(handles);
+        return
+    end
     currentData = currentData + 1;
     dataSet{currentData}.data = data;
        
@@ -258,7 +265,9 @@ if dir~=0
         try
             save(fullfile(dir,dataSet{i}.name) ,dataSet{i}.name,'-v7.3');
         catch me
-            errordlg(me.message,'Error');
+            ed = errordlg(me.message,'Error');
+            waitfor(ed);
+            updateWindow(handles);
         end
     end
     updateWindow(handles);
@@ -385,9 +394,16 @@ if ~isempty(cfg)
     dispWait(handles);
     
     data = dataSet{currentData}.data;
-
-    cfg.channel = ft_channelselection(channel,data.label);
-    data = ft_preprocessing(cfg,data);
+    
+    try
+        cfg.channel = ft_channelselection(channel,data.label);
+        data = ft_preprocessing(cfg,data);
+    catch ep
+        ed = errordlg(ep.message,'Error');
+        waitfor(ed);
+        updateWindow(handles);
+        return
+    end
 
     dataSet{currentData}.data = data;
 
@@ -410,9 +426,16 @@ if ~isempty(cfg)
     dispWait(handles);
     
     data = dataSet{currentData}.data;
-
-    cfg.channel = ft_channelselection(channel,data.label);
-    data = ft_preprocessing(cfg,data);
+    
+    try
+        cfg.channel = ft_channelselection(channel,data.label);
+        data = ft_preprocessing(cfg,data);
+    catch ep
+        ed = errordlg(ep.message,'Error');
+        waitfor(ed);
+        updateWindow(handles);
+        return
+    end
 
     dataSet{currentData}.data = data;
 
@@ -433,10 +456,17 @@ if ~isempty(cfg)
     dispWait(handles);
     
     data = dataSet{currentData}.data;
-
-    cfg.channel = ft_channelselection(channel,data.label);
-    data = ft_preprocessing(cfg,data);
-
+    
+    try
+        cfg.channel = ft_channelselection(channel,data.label);
+        data = ft_preprocessing(cfg,data);
+    catch ep
+        ed = errordlg(ep.message,'Error');
+        waitfor(ed);
+        updateWindow(handles);
+        return
+    end
+    
     dataSet{currentData}.data = data;
 
     updateWindow(handles);
@@ -459,10 +489,17 @@ if ~isempty(cfg)
     dispWait(handles);
     
     data = dataSet{currentData}.data;
-
-    cfg.channel = ft_channelselection(channel,data.label);
-    data = ft_preprocessing(cfg,data);
-
+    
+    try
+        cfg.channel = ft_channelselection(channel,data.label);
+        data = ft_preprocessing(cfg,data);
+    catch ep
+        ed = errordlg(ep.message,'Error');
+        waitfor(ed);
+        updateWindow(handles);
+        return
+    end
+    
     dataSet{currentData}.data = data;
 
     updateWindow(handles);
@@ -511,7 +548,15 @@ if isOk
     end
     dispWait(handles);
     
-    data = ft_rejectvisual(cfg,data);
+    try
+        data = ft_rejectvisual(cfg,data);
+    catch ep
+        ed = errordlg(ep.message,'Error');
+        waitfor(ed);
+        updateWindow(handles);
+        return
+    end
+    
     dataSet{currentData}.data = data;
     updateWindow(handles);
 
@@ -552,7 +597,16 @@ if isOk
         cfg.emgscale = emg;
     end
     dispWait(handles);
-    data = ft_rejectvisual(cfg,data);
+    
+    try
+        data = ft_rejectvisual(cfg,data);
+    catch ep
+        ed = errordlg(ep.message,'Error');
+        waitfor(ed);
+        updateWindow(handles);
+        return
+    end
+    
     dataSet{currentData}.data = data;
     updateWindow(handles);
 end
@@ -591,7 +645,14 @@ if isOk
         cfg.emgscale = emg;
     end
     dispWait(handles);
-    data = ft_rejectvisual(cfg,data);
+    try
+        data = ft_rejectvisual(cfg,data);
+    catch ep
+        ed = errordlg(ep.message,'Error');
+        waitfor(ed);
+        updateWindow(handles);
+        return
+    end
     dataSet{currentData}.data = data;
     updateWindow(handles);
 end
@@ -609,8 +670,17 @@ cfg = VisualInspect();
 if ~isempty(cfg)
     dispWait(handles);
     data = dataSet{currentData}.data;
-    cfg = ft_databrowser(cfg,data);
-    data = ft_rejectartifact(cfg, data);
+    
+    try
+        cfg = ft_databrowser(cfg,data);
+        data = ft_rejectartifact(cfg, data);
+    catch ep
+        ed = errordlg(ep.message,'Error');
+        waitfor(ed);
+        updateWindow(handles);
+        return
+    end
+    
     dataSet{currentData}.data = data;
     updateWindow(handles);
 end
@@ -734,8 +804,16 @@ else
     if ~isempty(cfg)
         dispWait(handles);
         cfg.dataset = data.cfg.dataset;
-        cfg = ft_definetrial(cfg);
-        data = ft_preprocessing(cfg);
+        
+        try
+            cfg = ft_definetrial(cfg);
+            data = ft_preprocessing(cfg);
+        catch ep
+            ed = errordlg(ep.message,'Error');
+            waitfor(ed);
+            updateWindow(handles);
+            return
+        end
         dataSet{currentData}.data = data;
         updateWindow(handles);
     end
@@ -778,6 +856,7 @@ if ~isempty(answer{1})&&~isempty(answer{2})
     if overLap<0||overLap>=1
         ed = errordlg('The value of ''overlap'' must >=0 and <1','Error');
         waitfor(ed);
+        updateWindow(handles);
         return
     end
     
@@ -786,7 +865,15 @@ if ~isempty(answer{1})&&~isempty(answer{2})
     cfg.length  = trailLength;
     cfg.overlap = overLap;
 
-    data = ft_redefinetrial( cfg,data );
+    try
+        data = ft_redefinetrial( cfg,data );
+    catch ep
+        ed = errordlg(ep.message,'Error');
+        waitfor(ed);
+        updateWindow(handles);
+        return
+    end
+    
     dataSet{currentData}.data = data;
     updateWindow(handles);
 end
@@ -819,7 +906,14 @@ dispWait(handles);
 cfg = [];
 cfg.continuous = 'yes';
 cfg.dataset = data.cfg.dataset;
-data = ft_preprocessing(cfg);
+
+try
+    data = ft_preprocessing(cfg);
+catch ep
+    ed = errordlg(ep.message,'Error');
+    updateWindow(handles);
+    return
+end
 dataSet{currentData}.data = data;
 
 updateWindow(handles);
