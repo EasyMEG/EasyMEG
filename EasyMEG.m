@@ -98,7 +98,7 @@ function menuCTFData_Callback(hObject, eventdata, handles)
 global dataSet;
 global currentData;
 
-if size(dataSet,1)>9
+if length(dataSet)>9
     ed = errordlg('You can only have 10 datasets in memory.','Error');
     waitfor(ed);
     return
@@ -112,9 +112,9 @@ if dataDir~=0
     cfg.dataset = dataDir;
     data = ft_preprocessing(cfg);
     currentData = currentData + 1;
-    dataSet{currentData,1} = data;
+    dataSet{currentData}.data = data;
        
-    dataSet{currentData,2} = getDatasetName();
+    dataSet{currentData}.name = getDatasetName();
     
     updateWindow(handles);
 end
@@ -142,9 +142,9 @@ if ~isvarname(dname)
     dname = getDatasetName();
 end
 
-if size(dataSet,2)>1
-    for i=1:size(dataSet,1)
-        if isequal(dname,dataSet{i,2})
+for i=1:length(dataSet)
+    if isfield(dataSet{i},'name')    
+        if isequal(dname,dataSet{i}.name)
             ed = errordlg('Invalid dataset name. The name you entered is already existed.');
             waitfor(ed);
             dname = getDatasetName();
@@ -152,6 +152,7 @@ if size(dataSet,2)>1
         end
     end
 end
+
 dataName = dname;
 
 
@@ -163,7 +164,7 @@ function menuLoadFieldTripData_Callback(hObject, eventdata, handles)
 global dataSet;
 global currentData;
 
-if size(dataSet,1)>9
+if length(dataSet)>9
     ed = errordlg('You can only have 10 datasets in memory.','Error');
     waitfor(ed);
     return
@@ -180,9 +181,9 @@ else
     load(dataDir);
     dataName = whos('-file',dataDir);
     currentData = currentData + 1;
-    dataSet{currentData,1} = eval(dataName.name);
+    dataSet{currentData}.data = eval(dataName.name);
     
-    dataSet{currentData,2} = getDatasetName(dataName.name);
+    dataSet{currentData}.name = getDatasetName(dataName.name);
     
     updateWindow(handles);
 end
@@ -215,7 +216,7 @@ else
     
     if isequal(dataName.name,'dataSet')
         load(dataDir);
-        currentData = size(dataSet,1);
+        currentData = length(dataSet);
 
         updateWindow(handles);
     else
@@ -252,10 +253,10 @@ global dataSet;
 dir = uigetdir('','Pick a folder to save datasets');
 if dir~=0
     dispWait(handles);
-    for i = 1:size(dataSet,1)
-        eval([dataSet{i,2},'=dataSet{i,1}']);
+    for i = 1:length(dataSet)
+        eval([dataSet{i}.name,'=dataSet{i}.data']);
         try
-            save(fullfile(dir,dataSet{i,2}) ,dataSet{i,2},'-v7.3');
+            save(fullfile(dir,dataSet{i}.name) ,dataSet{i}.name,'-v7.3');
         catch me
             errordlg(me.message,'Error');
         end
@@ -314,8 +315,8 @@ if isempty(dataSet)
     set(handles.text9 ,'String','');
 
 else
-    data = dataSet{currentData,1};
-    dataName = dataSet(currentData,2);
+    data = dataSet{currentData}.data;
+    dataName = dataSet{currentData}.name;
     
     set(handles.panelMain,'Title',strcat('Dataset  #',num2str(currentData),'  --',dataName));
     set(handles.text1, 'String','');
@@ -347,9 +348,9 @@ else
     delete(h);
     
     % create new 'Datasets' menus
-    for i=1:size(dataSet,1)
+    for i=1:length(dataSet)
         uimenu(handles.menuDatasets,...
-                    'Label',dataSet{i,2},...
+                    'Label',dataSet{i}.name,...
                     'Tag',['cbData',num2str(i)],...
                     'Checked','off',...
                     'Separator','On',...
@@ -383,12 +384,12 @@ global currentData;
 if ~isempty(cfg)
     dispWait(handles);
     
-    data = dataSet{currentData,1};
+    data = dataSet{currentData}.data;
 
     cfg.channel = ft_channelselection(channel,data.label);
     data = ft_preprocessing(cfg,data);
 
-    dataSet{currentData,1} = data;
+    dataSet{currentData}.data = data;
 
     updateWindow(handles);
 end
@@ -408,12 +409,12 @@ global currentData;
 if ~isempty(cfg)
     dispWait(handles);
     
-    data = dataSet{currentData,1};
+    data = dataSet{currentData}.data;
 
     cfg.channel = ft_channelselection(channel,data.label);
     data = ft_preprocessing(cfg,data);
 
-    dataSet{currentData,1} = data;
+    dataSet{currentData}.data = data;
 
     updateWindow(handles);
 end
@@ -431,12 +432,12 @@ global currentData;
 if ~isempty(cfg)
     dispWait(handles);
     
-    data = dataSet{currentData,1};
+    data = dataSet{currentData}.data;
 
     cfg.channel = ft_channelselection(channel,data.label);
     data = ft_preprocessing(cfg,data);
 
-    dataSet{currentData,1} = data;
+    dataSet{currentData}.data = data;
 
     updateWindow(handles);
 end
@@ -457,12 +458,12 @@ global currentData;
 if ~isempty(cfg)
     dispWait(handles);
     
-    data = dataSet{currentData,1};
+    data = dataSet{currentData}.data;
 
     cfg.channel = ft_channelselection(channel,data.label);
     data = ft_preprocessing(cfg,data);
 
-    dataSet{currentData,1} = data;
+    dataSet{currentData}.data = data;
 
     updateWindow(handles);
 end
@@ -483,7 +484,7 @@ function menuTrailByTrail_Callback(hObject, eventdata, handles)
 global dataSet;
 global currentData;
 
-data = dataSet{currentData};
+data = dataSet{currentData}.data;
 [isOk, base, meg, eeg, ecg, eog, emg]=getAlim();
 
 if isOk
@@ -511,7 +512,7 @@ if isOk
     dispWait(handles);
     
     data = ft_rejectvisual(cfg,data);
-    dataSet{currentData} = data;
+    dataSet{currentData}.data = data;
     updateWindow(handles);
 
 end
@@ -525,7 +526,7 @@ function menuChannelByChannel_Callback(hObject, eventdata, handles)
 global dataSet;
 global currentData;
 
-data = dataSet{currentData};
+data = dataSet{currentData}.data;
 [isOk, base, meg, eeg, ecg, eog, emg]=getAlim();
 
 if isOk
@@ -552,7 +553,7 @@ if isOk
     end
     dispWait(handles);
     data = ft_rejectvisual(cfg,data);
-    dataSet{currentData} = data;
+    dataSet{currentData}.data = data;
     updateWindow(handles);
 end
 
@@ -564,7 +565,7 @@ function MenuBySummary_Callback(hObject, eventdata, handles)
 global dataSet;
 global currentData;
 
-data = dataSet{currentData};
+data = dataSet{currentData}.data;
 [isOk, base, meg, eeg, ecg, eog, emg]=getAlim();
 
 if isOk
@@ -591,7 +592,7 @@ if isOk
     end
     dispWait(handles);
     data = ft_rejectvisual(cfg,data);
-    dataSet{currentData} = data;
+    dataSet{currentData}.data = data;
     updateWindow(handles);
 end
 
@@ -607,10 +608,10 @@ global currentData;
 cfg = VisualInspect();
 if ~isempty(cfg)
     dispWait(handles);
-    data = dataSet{currentData};
+    data = dataSet{currentData}.data;
     cfg = ft_databrowser(cfg,data);
     data = ft_rejectartifact(cfg, data);
-    dataSet{currentData} = data;
+    dataSet{currentData}.data = data;
     updateWindow(handles);
 end
 
@@ -634,8 +635,8 @@ btnName = questdlg('Remove current dataset?', ...
                      'Remove dataset', ...
                      'Yes','Cancel','Cancel');
 if isequal(btnName,'Yes')
-    dataSet(currentData,:) = [];
-    currentData = size(dataSet,1);
+    dataSet(currentData) = [];
+    currentData = length(dataSet);
 end
 updateWindow(handles);
 
@@ -654,7 +655,7 @@ btnName = questdlg('Remove all dataset?', ...
                      'Yes', 'Cancel','Cancel');
 if isequal(btnName,'Yes')
     dataSet = [];
-    currentData = size(dataSet,1);
+    currentData = 0;
 end
 updateWindow(handles);
 
@@ -723,9 +724,9 @@ function menuRedefineTrailsEvent_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global dataSet;
 global currentData;
-data = dataSet{currentData,1};
+data = dataSet{currentData}.data;
 
-if ~isempty(dataSet{currentData}.cfg.previous)
+if ~isempty(dataSet{currentData}.data.cfg.previous)
     ed = errordlg('This function need the origin data. You may try to reload this dataset.','Error');
     waitfor(ed);
 else
@@ -735,7 +736,7 @@ else
         cfg.dataset = data.cfg.dataset;
         cfg = ft_definetrial(cfg);
         data = ft_preprocessing(cfg);
-        dataSet{currentData,1} = data;
+        dataSet{currentData}.data = data;
         updateWindow(handles);
     end
 end
@@ -757,15 +758,15 @@ answer = inputdlg(prompt,name,numlines,defaultanswer);
 
 if ~isempty(answer{1})&&~isempty(answer{2})
     dispWait(handles);
-    data = dataSet{currentData};
+    data = dataSet{currentData}.data;
     trailLength = str2double(answer{1});
     overLap = str2double(answer{2});
 
     cfg= [];
     cfg.length  = trailLength;
     cfg.overlap = overLap;
-
+    
     data = ft_redefinetrial( cfg,data );
-    dataSet{currentData} = data;
+    dataSet{currentData}.data = data;
     updateWindow(handles);
 end

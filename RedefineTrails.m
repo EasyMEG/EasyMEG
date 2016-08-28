@@ -67,7 +67,7 @@ global currentData;
 global listEventType;
 global listEventValue;
 
-handles.dataDir = dataSet{currentData}.cfg.dataset;
+handles.dataDir = dataSet{currentData}.data.cfg.dataset;
 
 event = ft_read_event(handles.dataDir);
 event = struct2cell(event);
