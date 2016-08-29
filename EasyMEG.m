@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 28-Aug-2016 19:03:55
+% Last Modified by GUIDE v2.5 29-Aug-2016 10:22:27
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -346,11 +346,13 @@ if isempty(dataSet)
     set(handles.menuDatasets,'Enable','Off');
     set(handles.menuSaveAsFieldTripData,'Enable','Off');
     set(handles.menuSaveAsEasyMegData,'Enable','Off');
+    set(handles.menuSensorLevelAnalysis,'Enable','Off');
 else
     set(handles.menuPreprocessing,'Enable','On');
     set(handles.menuDatasets,'Enable','On');
     set(handles.menuSaveAsFieldTripData,'Enable','On');
     set(handles.menuSaveAsEasyMegData,'Enable','On');
+    set(handles.menuSensorLevelAnalysis,'Enable','On');
     
     % delete 'Datasets' menus 
     h = findobj(handles.menuDatasets,'UserData','dataSetList');
@@ -911,9 +913,145 @@ try
     data = ft_preprocessing(cfg);
 catch ep
     ed = errordlg(ep.message,'Error');
+    waitfor(ed);
     updateWindow(handles);
     return
 end
 dataSet{currentData}.data = data;
 
 updateWindow(handles);
+
+
+% --------------------------------------------------------------------
+function menuSensorLevelAnalysis_Callback(hObject, eventdata, handles)
+% hObject    handle to menuSensorLevelAnalysis (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menuTimeLockAnalysis_Callback(hObject, eventdata, handles)
+% hObject    handle to menuTimeLockAnalysis (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+
+data = dataSet{currentData}.data;
+
+cfg = TimeLockAnalysis();
+
+if isempty(cfg)
+    return
+end
+
+dispWait(handles);
+
+try
+    timelock = ft_timelockanalysis(cfg,data);
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+    updateWindow(handles);
+    return
+end
+
+dataset{currentData}.timelock = timelock;
+
+updateWindow(handles);
+
+
+% --------------------------------------------------------------------
+function menuComputeCovariance_Callback(hObject, eventdata, handles)
+% hObject    handle to menuComputeCovariance (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menuComputePlanarGradient_Callback(hObject, eventdata, handles)
+% hObject    handle to menuComputePlanarGradient (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menuTimeFreqAnalysis_Callback(hObject, eventdata, handles)
+% hObject    handle to menuTimeFreqAnalysis (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menuFreqHanningTapers_Callback(hObject, eventdata, handles)
+% hObject    handle to menuFreqHanningTapers (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+
+data = dataSet{currentData}.data;
+
+cfg = TrfHanningTapers();
+
+if isempty(cfg)
+    return
+end
+
+dispWait(handles);
+
+try
+    tfr = ft_freqanalysis(cfg,data);
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+    updateWindow(handles);
+    return
+end
+
+dataSet{currentData}.tfr = tfr;
+updateWindow(handles);
+
+
+
+% --------------------------------------------------------------------
+function menuCorticoMuscularCoherence_Callback(hObject, eventdata, handles)
+% hObject    handle to menuCorticoMuscularCoherence (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+
+data = dataSet{currentData}.data;
+
+cfg = CorticoMuscularCoherence();
+
+if isempty(cfg)
+    return
+end
+
+dispWait(handles);
+try
+    csd = ft_freqanalysis(cfg,data);
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+    updateWindow(handles);
+end
+
+cfg                 = [];
+cfg.method          = 'coh';
+cfg.channelcmb      = {'MEG' 'EMG'};
+
+try
+    conn = ft_connectivityanalysis(cfg, csd);
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+    updateWindow(handles);
+    return
+end
+
+dataSet{currentData}.conn = conn;
+updateWindow(handles);
+
