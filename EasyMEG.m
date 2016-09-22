@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 29-Aug-2016 10:22:27
+% Last Modified by GUIDE v2.5 22-Sep-2016 11:11:27
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1041,3 +1041,133 @@ end
 dataSet{currentData}.conn = conn;
 updateWindow(handles);
 
+
+
+% --------------------------------------------------------------------
+function menuImportAnatomyData_Callback(hObject, eventdata, handles)
+% hObject    handle to menuImportAnatomyData (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menuMriData_Callback(hObject, eventdata, handles)
+% hObject    handle to menuMriData (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+
+data = dataSet{currentData};
+
+if isfield(data,'mri')
+    ButtonName = questdlg('The current dataset already has MRI data, import anyway?', ...
+                          'Loading MRI data', ...
+                          'Yes', 'No', 'No');
+    switch ButtonName,
+        case 'Yes',
+            disp('Removing mri data from current dataset.');
+        case 'No',
+            disp('Import canceled.')
+            return
+    end % switch
+end
+
+[filename, pathname] = uigetfile('*.mat', 'Pick a MRI datafile (.mri file)');
+dataDir = fullfile(pathname, filename);
+
+if isequal(filename,0) || isequal(pathname,0)
+    disp('Loading canceled...');
+else    
+    dispWait(handles);
+    
+    try
+    	mri = ft_read_mri(dataDir);
+        data.mri = mri;
+        dataSet{currentData} = data;
+    catch ep
+        ed = errordlg(ep.message,'Error');
+        waitfor(ed);
+    end
+    updateWindow(handles);
+end
+
+
+% --------------------------------------------------------------------
+function menuHeadModel_Callback(hObject, eventdata, handles)
+% hObject    handle to menuHeadModel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+data = dataSet{currentData};
+
+if isfield(data,'headmodel')
+    ButtonName = questdlg('The current dataset already has headmodel, import anyway?', ...
+                          'Loading headmodel', ...
+                          'Yes', 'No', 'No');
+    switch ButtonName,
+        case 'Yes',
+            disp('Removing headmodel from current dataset.');
+        case 'No',
+            disp('Import canceled.')
+            return
+    end % switch
+end
+
+[filename, pathname]  = uigetfile('*.mat', 'Pick a FieldTrip Headmodel (.mat file)');
+dataDir = fullfile(pathname, filename);
+
+if isequal(filename,0) || isequal(pathname,0)
+    disp('Loading canceled...');
+else
+    dispWait(handles);
+    
+    load(dataDir);
+    dataName = whos('-file',dataDir);
+    data.headmodel = eval(dataName.name);
+    
+    dataSet{currentData} = data;
+        
+    updateWindow(handles);
+end
+
+
+% --------------------------------------------------------------------
+function menuSourceModel_Callback(hObject, eventdata, handles)
+% hObject    handle to menuSourceModel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+data = dataSet{currentData};
+
+if isfield(data,'sourcemodel')
+    ButtonName = questdlg('The current dataset already has sourcemodel, import anyway?', ...
+                          'Loading sourcemodel', ...
+                          'Yes', 'No', 'No');
+    switch ButtonName,
+        case 'Yes',
+            disp('Removing sourcemodel from current dataset.');
+        case 'No',
+            disp('Import canceled.')
+            return
+    end % switch
+end
+
+[filename, pathname]  = uigetfile('*.mat', 'Pick a FieldTrip sourcemodel (.mat file)');
+dataDir = fullfile(pathname, filename);
+
+if isequal(filename,0) || isequal(pathname,0)
+    disp('Loading canceled...');
+else
+    dispWait(handles);
+    
+    load(dataDir);
+    dataName = whos('-file',dataDir);
+    data.sourcemodel = eval(dataName.name);
+    
+    dataSet{currentData} = data;
+        
+    updateWindow(handles);
+end
