@@ -962,20 +962,6 @@ updateWindow(handles);
 
 
 % --------------------------------------------------------------------
-function menuComputeCovariance_Callback(hObject, eventdata, handles)
-% hObject    handle to menuComputeCovariance (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --------------------------------------------------------------------
-function menuComputePlanarGradient_Callback(hObject, eventdata, handles)
-% hObject    handle to menuComputePlanarGradient (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --------------------------------------------------------------------
 function menuTimeFreqAnalysis_Callback(hObject, eventdata, handles)
 % hObject    handle to menuTimeFreqAnalysis (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
