@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 22-Sep-2016 11:11:27
+% Last Modified by GUIDE v2.5 22-Sep-2016 19:19:54
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1171,3 +1171,86 @@ else
         
     updateWindow(handles);
 end
+
+
+% --------------------------------------------------------------------
+function menuSourceAnalysis_Callback(hObject, eventdata, handles)
+% hObject    handle to menuSourceAnalysis (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menuCreateHeadmodel_Callback(hObject, eventdata, handles)
+% hObject    handle to menuCreateHeadmodel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet
+global currentData
+
+data = dataSet{currentData}
+
+if ~isfield(data,'mri')
+    ed = errordlg('Cannot find MRI data in current dataset, you must import MRI data first.');
+    waitfor(ed);
+    return
+end
+
+dispWait(handles);
+
+cfg = [];
+cfg.output = 'brain';
+
+try
+    segmentedmri = ft_volumesegment(cfg, mri);
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+    updateWindow(handles);
+    return
+end
+
+ButtonName = questdlg('Please select the method for headmodel constructing:', ...
+                       'Headmodel', ...
+                       'singlesphere', 'localspheres', 'singleshell', 'singleshell');
+switch ButtonName,
+	case 'singlesphere',
+        cfg = [];
+        cfg.method = 'singlesphere';
+        try
+            headmodel = ft_prepare_headmodel(cfg, segmentedmri);
+        catch ep
+            ed = errordlg(ep.message,'Error');
+            waitfor(ed);
+            updateWindow(handles);
+            return
+        end
+	case 'localspheres',
+        cfg = [];
+        cfg.grad = data.grad;
+        cfg.method = 'localspheres';
+        try
+            headmodel = ft_prepare_headmodel(cfg, segmentedmri);
+        catch ep
+            ed = errordlg(ep.message,'Error');
+            waitfor(ed);
+            updateWindow(handles);
+            return
+        end
+    case 'singleshell',
+        cfg = [];
+        cfg.method = 'singleshell';
+        try
+            headmodel = ft_prepare_headmodel(cfg, segmentedmri);
+        catch ep
+            ed = errordlg(ep.message,'Error');
+            waitfor(ed);
+            updateWindow(handles);
+            return
+        end
+           
+end % switch
+
+data.headmodel = headmodel;
+dataSet{currentData} = data;
+updateWindow(handles);
