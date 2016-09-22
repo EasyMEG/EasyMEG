@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 22-Sep-2016 19:19:54
+% Last Modified by GUIDE v2.5 22-Sep-2016 19:33:08
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1254,3 +1254,38 @@ end % switch
 data.headmodel = headmodel;
 dataSet{currentData} = data;
 updateWindow(handles);
+
+
+% --------------------------------------------------------------------
+function menuCoregisterMriToMeg_Callback(hObject, eventdata, handles)
+% hObject    handle to menuCoregisterMriToMeg (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet
+global currentData
+data = dataSet{currentData};
+
+if ~isfield(data,'mri')
+    ed = errordlg('Cannot find MRI in current dataset.','Error');
+    waitfor(ed);
+    return
+end
+
+try
+    cfg = [];
+    cfg.method = 'interactive';
+    
+    % coordsys should match the MEG dataset
+    cfg.coordsys = 'ctf';
+    mri_realigned = ft_volumerealign(cfg,mri);
+    
+    % ft_volumereslice to prevent aproblem
+    % for detail: http://www.fieldtriptoolbox.org/faq/my_mri_is_upside_down_is_this_a_problem
+    cfg = [];
+    mri_realigned = ft_volumereslice(cfg, mri_realigned);
+    data.mri = mri_realigned;
+    dataSet{currentData} = data;
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
