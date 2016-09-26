@@ -1113,6 +1113,10 @@ else
     
     try
     	mri = ft_read_mri(dataDir);
+        % ft_volumereslice to prevent aproblem
+        % for detail: http://www.fieldtriptoolbox.org/faq/my_mri_is_upside_down_is_this_a_problem
+    	cfg = [];
+        mri = ft_volumereslice(cfg, mri);
         data.mri = mri;
         dataSet{currentData} = data;
     catch ep
@@ -1313,10 +1317,6 @@ try
     cfg.coordsys = 'ctf';
     mri_realigned = ft_volumerealign(cfg,mri);
     
-    % ft_volumereslice to prevent aproblem
-    % for detail: http://www.fieldtriptoolbox.org/faq/my_mri_is_upside_down_is_this_a_problem
-    cfg = [];
-    mri_realigned = ft_volumereslice(cfg, mri_realigned);
     data.mri = mri_realigned;
     dataSet{currentData} = data;
 catch ep
