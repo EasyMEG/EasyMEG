@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 22-Sep-2016 19:33:08
+% Last Modified by GUIDE v2.5 22-Sep-2016 20:04:03
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -64,12 +64,40 @@ guidata(hObject, handles);
 % global variables
 global dataSet;
 global currentData;
+global EasyMEGPath;
+global FieldTripPath;
 
 dataSet = [];
 currentData = 0;
 
 updateWindow(handles);
 
+% uercfg
+EasyMEGPath = mfilename('fullpath');
+EasyMEGPath = fileparts(EasyMEGPath);
+cd(EasyMEGPath);
+path(path, './external/inifile/');
+try
+    key = {'','','FieldTripPath',''};
+    cfgFilePath = fullfile(EasyMEGPath,'config.ini');
+    readsett = inifile(cfgFilePath,'read',key);
+    FieldTripPath = readsett{1};
+    path(path,FieldTripPath);
+    ft_defaults;
+catch
+    FieldTripPath = uigetdir('.','Please set the FieldTrip toolbox directory.');
+    cfgFilePath = fullfile(EasyMEGPath,'config.ini');
+    if FieldTripPath~=0
+        key = {'','','FieldTripPath',FieldTripPath};
+        
+        inifile(cfgFilePath,'new');
+        inifile(cfgFilePath,'write',key,'plain');
+        
+        path(path,FieldTripPath);
+        ft_defaults;
+    end
+end
+    
 
 % --- Outputs from this function are returned to the command line.
 function varargout = EasyMEG_OutputFcn(hObject, eventdata, handles) 
@@ -347,12 +375,14 @@ if isempty(dataSet)
     set(handles.menuSaveAsFieldTripData,'Enable','Off');
     set(handles.menuSaveAsEasyMegData,'Enable','Off');
     set(handles.menuSensorLevelAnalysis,'Enable','Off');
+    set(handles.menuSourceAnalysis,'Enable','Off');
 else
     set(handles.menuPreprocessing,'Enable','On');
     set(handles.menuDatasets,'Enable','On');
     set(handles.menuSaveAsFieldTripData,'Enable','On');
     set(handles.menuSaveAsEasyMegData,'Enable','On');
     set(handles.menuSensorLevelAnalysis,'Enable','On');
+    set(handles.menuSourceAnalysis,'Enable','On');
     
     % delete 'Datasets' menus 
     h = findobj(handles.menuDatasets,'UserData','dataSetList');
@@ -1266,7 +1296,7 @@ global currentData
 data = dataSet{currentData};
 
 if ~isfield(data,'mri')
-    ed = errordlg('Cannot find MRI in current dataset.','Error');
+    ed = errordlg('Cannot find MRI data in current dataset, you must import MRI data first.');
     waitfor(ed);
     return
 end
@@ -1289,3 +1319,83 @@ catch ep
     ed = errordlg(ep.message,'Error');
     waitfor(ed);
 end
+
+
+% --------------------------------------------------------------------
+function menuCreateSourcemodel_Callback(hObject, eventdata, handles)
+% hObject    handle to menuCreateSourcemodel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet
+global currentData
+global FieldTripPath
+
+data = dataSet{currentData};
+
+if ~isfield(data,'mri')
+    ed = errordlg('Cannot find MRI data in current dataset, you must import MRI data first.');
+    waitfor(ed);
+    return
+end
+
+[useTemplate, cfg0] = SourceModel();
+mri = data.mri;
+
+if useTemplate
+    templatePath = cfg0.templatePath;
+    
+    try
+        load(templatePath);
+        templateName = whos('-file',templatePath);
+        template = eval(templateName.name);
+
+        cfg                = [];
+        cfg.grid.warpmni   = 'yes';
+        cfg.grid.template  = template;
+        cfg.grid.nonlinear = 'yes'; % use non-linear normalization
+        cfg.mri            = mri;
+        cfg.grid.unit      ='mm';
+        data.sourcemodel   = ft_prepare_sourcemodel(cfg);
+        
+        dataSet{currentData} = data;
+    catch ep
+        ed = errordlg(ep.message, 'Error');
+        waitfor(ed);
+    end
+else
+    template = ft_read_mri(fullfile(FieldTripPath, '/external/spm8/templates/T1.nii'));
+    template.coordsys = 'spm';
+
+    % segment the template brain and construct a volume conduction model (i.e. head model): 
+    % this is needed to describe the boundary that define which dipole locations are 'inside' the brain.
+    cfg          = [];
+    template_seg = ft_volumesegment(cfg, template);
+
+    cfg          = [];
+    cfg.method   = 'singleshell';
+    template_headmodel = ft_prepare_headmodel(cfg, template_seg);
+    template_headmodel = ft_convert_units(template_headmodel, 'cm'); % Convert the vol to cm, because the CTF convenction is to express everything in cm.
+
+    % construct the dipole grid in the template brain coordinates
+    % the negative inwardshift means an outward shift of the brain surface for inside/outside detection
+    cfg = [];
+    cfg.grid.resolution = cfg0.resolution;
+    cfg.grid.tight  = 'yes';
+    cfg.inwardshift = cfg0.inwardshift;
+    cfg.moveinward  = cfg0.moveinward;
+    cfg.headmodel   = template_headmodel;
+    template_grid   = ft_prepare_sourcemodel(cfg);
+   
+
+    cfg                = [];
+    cfg.grid.warpmni   = 'yes';
+    cfg.grid.template  = template_grid;
+    cfg.grid.nonlinear = 'yes'; % use non-linear normalization
+    cfg.mri            = mri;
+    cfg.grid.unit      ='mm';
+    data.sourcemodel   = ft_prepare_sourcemodel(cfg);
+    
+    dataSet{currentData} = data;
+end
+
+
