@@ -376,6 +376,7 @@ if isempty(dataSet)
     set(handles.menuSaveAsEasyMegData,'Enable','Off');
     set(handles.menuSensorLevelAnalysis,'Enable','Off');
     set(handles.menuSourceAnalysis,'Enable','Off');
+    set(handles.menuImportAnatomyData,'Enable','Off');
 else
     set(handles.menuPreprocessing,'Enable','On');
     set(handles.menuDatasets,'Enable','On');
@@ -383,6 +384,7 @@ else
     set(handles.menuSaveAsEasyMegData,'Enable','On');
     set(handles.menuSensorLevelAnalysis,'Enable','On');
     set(handles.menuSourceAnalysis,'Enable','On');
+    set(handles.menuImportAnatomyData,'Enable','On');
     
     % delete 'Datasets' menus 
     h = findobj(handles.menuDatasets,'UserData','dataSetList');
@@ -1103,7 +1105,7 @@ if isfield(data,'mri')
     end % switch
 end
 
-[filename, pathname] = uigetfile('*.mat', 'Pick a MRI datafile (.mri file)');
+[filename, pathname] = uigetfile('*', 'Pick a MRI datafile (.mri file)');
 dataDir = fullfile(pathname, filename);
 
 if isequal(filename,0) || isequal(pathname,0)
