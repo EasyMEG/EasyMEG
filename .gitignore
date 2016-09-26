@@ -2,3 +2,5 @@
 *.asv
 # config file
 *.ini
+# test data
+/TestData
