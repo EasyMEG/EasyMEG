@@ -1228,6 +1228,8 @@ end
 
 dispWait(handles);
 
+mri = data.mri;
+
 cfg = [];
 cfg.output = 'brain';
 
@@ -1300,6 +1302,8 @@ if ~isfield(data,'mri')
     waitfor(ed);
     return
 end
+
+mri = data.mri;
 
 try
     cfg = [];
