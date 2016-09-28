@@ -1315,6 +1315,9 @@ try
     cfg = [];
     cfg.method = 'interactive';
     
+    % help message    
+    web('/documents/help-CoregisterMRItoMEG.html');
+    
     % coordsys should match the MEG dataset
     cfg.coordsys = 'ctf';
     mri_realigned = ft_volumerealign(cfg,mri);
