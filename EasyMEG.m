@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 22-Sep-2016 20:04:03
+% Last Modified by GUIDE v2.5 29-Sep-2016 09:29:09
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1408,3 +1408,10 @@ else
 end
 
 
+
+
+% --------------------------------------------------------------------
+function menuFilters_Callback(hObject, eventdata, handles)
+% hObject    handle to menuFilters (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
