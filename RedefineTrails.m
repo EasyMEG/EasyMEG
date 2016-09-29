@@ -53,7 +53,7 @@ function RedefineTrails_OpeningFcn(hObject, eventdata, handles, varargin)
 % varargin   command line arguments to RedefineTrails (see VARARGIN)
 handles.output = hObject;
 handles.cfg = [];
-
+handles.dataDir = varargin{1};
 
 % Choose default command line output for RedefineTrails
 handles.output = hObject;
@@ -62,14 +62,16 @@ handles.output = hObject;
 guidata(hObject, handles);
 
 % Ini
-global dataSet;
-global currentData;
 global listEventType;
 global listEventValue;
 
-handles.dataDir = dataSet{currentData}.data.cfg.dataset;
-
-event = ft_read_event(handles.dataDir);
+try
+    event = ft_read_event(handles.dataDir);
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+    return
+end
 event = struct2cell(event);
 eventType  = event(1,:);
 eventValue = event(3,:);
@@ -203,6 +205,7 @@ function btnOk_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 cfg                         = [];
+cfg.dataset                 = handles.dataDir;
 cfg.trialfun                = 'ft_trialfun_general';
 cfg.trialdef.eventtype      = get(handles.editEventType,'String');
 cfg.trialdef.eventvalue     = str2double(get(handles.editEventValue,'String')); % the value of the stimulus trigger for fully incongruent (FIC).

@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 29-Sep-2016 09:29:09
+% Last Modified by GUIDE v2.5 29-Sep-2016 16:40:33
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -135,23 +135,51 @@ end
 dataDir = uigetdir('.','Pick a CTF data directory');
 if dataDir~=0
     dispWait(handles);
-
-    cfg = [];
-    cfg.dataset = dataDir;
-    try
-        data = ft_preprocessing(cfg);
-    catch ep
-        ed = errordlg(ep.message,'Error');
-        waitfor(ed);
-        updateWindow(handles);
-        return
+    data = [];
+  
+    % define trial or not
+    btnName = questdlg('Define trial now? ', ...
+                     'Define trial', ...
+                     'Yes','No','Yes');
+    switch btnName
+        case 'Yes'                       
+            cfg = RedefineTrails(dataDir);
+            if ~isempty(cfg)
+                try
+                    cfg = ft_definetrial(cfg);
+                    data.data = ft_preprocessing(cfg);
+                    data.event = ft_read_event(dataDir);
+                    data.name = getDatasetName();
+                    
+                    currentData = currentData + 1;
+                    dataSet{currentData} = data;
+                    updateWindow(handles);
+                catch ep
+                    ed = errordlg(ep.message,'Error');
+                    waitfor(ed);
+                    updateWindow(handles);
+                    return
+                end
+            end
+            
+        case 'No'
+            % load data without defining trial
+            try
+                cfg = [];
+                cfg.dataset = dataDir;
+                data.data = ft_preprocessing(cfg);
+                data.event = ft_read_event(dataDir);
+                data.name = getDatasetName();
+                
+                currentData = currentData + 1;
+                dataSet{currentData} = data;
+                updateWindow(handles);
+            catch ep
+                ed = errordlg(ep.message,'Error');
+                waitfor(ed);
+                updateWindow(handles);
+            end
     end
-    currentData = currentData + 1;
-    dataSet{currentData}.data = data;
-       
-    dataSet{currentData}.name = getDatasetName();
-    
-    updateWindow(handles);
 end
 
 function dataName = getDatasetName(varargin)
@@ -830,14 +858,13 @@ global dataSet;
 global currentData;
 data = dataSet{currentData}.data;
 
-if ~isempty(dataSet{currentData}.data.cfg.previous)
+if ~isempty(data.cfg.previous)
     ed = errordlg('This function need the origin data. You may try to reload this dataset.','Error');
     waitfor(ed);
 else
-    cfg = RedefineTrails();
+    cfg = RedefineTrails(data.cfg.dataset);
     if ~isempty(cfg)
         dispWait(handles);
-        cfg.dataset = data.cfg.dataset;
         
         try
             cfg = ft_definetrial(cfg);
@@ -1180,7 +1207,7 @@ data = dataSet{currentData};
 
 if isfield(data,'sourcemodel')
     ButtonName = questdlg('The current dataset already has sourcemodel, import anyway?', ...
-                          'Loading sourcemodel', ...
+                          'Load sourcemodel', ...
                           'Yes', 'No', 'No');
     switch ButtonName,
         case 'Yes',
@@ -1415,3 +1442,51 @@ function menuFilters_Callback(hObject, eventdata, handles)
 % hObject    handle to menuFilters (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menuImportEvent_Callback(hObject, eventdata, handles)
+% hObject    handle to menuImportEvent (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menuCTFEvent_Callback(hObject, eventdata, handles)
+% hObject    handle to menuCTFEvent (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+data = dataSet{currentData};
+
+if isfield(data,'event')
+    ButtonName = questdlg('The current dataset already has event, import anyway?', ...
+                          'Load event', ...
+                          'Yes', 'No', 'No');
+    switch ButtonName,
+        case 'Yes',
+            disp('Removing event from current dataset.');
+        case 'No',
+            disp('Import canceled.')
+            return
+    end % switch
+end
+
+dataDir = uigetdir('Pick a CTF dataset (.ds floder)');
+
+if ~dataDir
+    disp('Loading canceled...');
+else
+    dispWait(handles);
+    
+    try
+        event = ft_read_event(dataDir);
+        data.event = event;
+        dataSet{currentData} = data;
+        updateWindow(handles);
+    catch ep
+        ed = errordlg(ep.message,'Error');
+        waitfor(ed);
+    end
+end
