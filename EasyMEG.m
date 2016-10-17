@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 29-Sep-2016 16:40:33
+% Last Modified by GUIDE v2.5 17-Oct-2016 12:15:10
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -405,6 +405,8 @@ if isempty(dataSet)
     set(handles.menuSensorLevelAnalysis,'Enable','Off');
     set(handles.menuSourceAnalysis,'Enable','Off');
     set(handles.menuImportAnatomyData,'Enable','Off');
+    set(handles.menuImportEvent,'Enable','Off');
+    set(handles.menuVisualization,'Enable','Off');
 else
     set(handles.menuPreprocessing,'Enable','On');
     set(handles.menuDatasets,'Enable','On');
@@ -413,6 +415,8 @@ else
     set(handles.menuSensorLevelAnalysis,'Enable','On');
     set(handles.menuSourceAnalysis,'Enable','On');
     set(handles.menuImportAnatomyData,'Enable','On');
+    set(handles.menuImportEvent,'Enable','On');
+    set(handles.menuVisualization,'Enable','On');
     
     % delete 'Datasets' menus 
     h = findobj(handles.menuDatasets,'UserData','dataSetList');
@@ -1473,7 +1477,7 @@ if isfield(data,'event')
     end % switch
 end
 
-dataDir = uigetdir('Pick a CTF dataset (.ds floder)');
+dataDir = uigetdir('.','Pick a CTF dataset (.ds floder)');
 
 if ~dataDir
     disp('Loading canceled...');
@@ -1489,4 +1493,77 @@ else
         ed = errordlg(ep.message,'Error');
         waitfor(ed);
     end
+end
+
+
+% --------------------------------------------------------------------
+function menuViewHeadmodel_Callback(hObject, eventdata, handles)
+% hObject    handle to menuViewHeadmodel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+data = dataSet{currentData};
+
+if ~isfield(data,'headmodel')
+    ed = errordlg('Cannot find headmodel, you need to create headmodel first.','Error');
+    waitfor(ed);
+    return
+end
+    
+dataDir = uigetdir('.','Import sensors, please select the original data floder.');
+
+if ~dataDir
+    disp('Loading canceled...');
+else    
+    try
+        sens = ft_read_sens(dataDir);
+        sens = ft_convert_units(sens,'mm');
+
+        figure
+        ft_plot_sens(sens, 'style', 'r*');
+
+        hold on
+        ft_plot_vol(data.headmodel);
+    catch ep
+        ed = errordlg(ep.message,'Error');
+        waitfor(ed);
+    end
+end
+
+
+% --------------------------------------------------------------------
+function menuViewSourcemodel_Callback(hObject, eventdata, handles)
+% hObject    handle to menuViewSourcemodel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+data = dataSet{currentData};
+
+if ~isfield(data,'sourcemodel')
+    ed = errordlg('Cannot find sourcemodel, you need to create or import sourcemodel first.','Error');
+    waitfor(ed);
+    return
+end
+
+if ~isfield(data,'headmodel')
+    ed = errordlg('Cannot find headmodel, you need to create or import headmodel first.','Error');
+    waitfor(ed);
+    return
+end
+    
+try
+    headmodel = ft_convert_units(data.headmodel,'mm');
+    sourcemodel = ft_convert_units(data.sourcemodel,'mm');
+
+    figure
+    hold on
+    ft_plot_vol(headmodel, 'facecolor', 'cortex', 'edgecolor', 'none');
+    alpha 0.5;
+    camlight;
+    ft_plot_mesh(sourcemodel.pos(sourcemodel.inside,:));
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
 end
