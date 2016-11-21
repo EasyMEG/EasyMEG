@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 17-Oct-2016 12:15:10
+% Last Modified by GUIDE v2.5 21-Nov-2016 14:41:30
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1567,3 +1567,35 @@ catch ep
     ed = errordlg(ep.message,'Error');
     waitfor(ed);
 end
+
+
+% --------------------------------------------------------------------
+function menuRedefineTrailLength_Callback(hObject, eventdata, handles)
+% hObject    handle to menuRedefineTrailLength (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+data = dataSet{currentData};
+
+prompt={'Enter new trail border:'};
+name='Trail length';
+numlines=1;
+defaultanswer={'[-1 2]'};
+
+answer=inputdlg(prompt,name,numlines,defaultanswer);
+
+cfg = [];
+
+try
+    dispWait(handles);
+    cfg.toilim = answer;
+    data = ft_redefinetrial(cfg, data);
+    dataSet{currentData} = data;
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
+
+updateWindow(handles);
+
