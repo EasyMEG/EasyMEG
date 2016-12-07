@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 17-Oct-2016 12:15:10
+% Last Modified by GUIDE v2.5 07-Dec-2016 10:26:11
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1566,4 +1566,197 @@ try
 catch ep
     ed = errordlg(ep.message,'Error');
     waitfor(ed);
+end
+
+
+% --------------------------------------------------------------------
+function menuNeuromagData_Callback(hObject, eventdata, handles)
+% hObject    handle to menuNeuromagData (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+
+if length(dataSet)>9
+    ed = errordlg('You can only have 10 datasets in memory.','Error');
+    waitfor(ed);
+    return
+end
+
+dataDir = uigetdir('.','Pick a Neuromag data directory');
+if dataDir~=0
+    dispWait(handles);
+    data = [];
+  
+    % define trial or not
+    btnName = questdlg('Define trial now? ', ...
+                     'Define trial', ...
+                     'Yes','No','Yes');
+    switch btnName
+        case 'Yes'                       
+            cfg = RedefineTrails(dataDir);
+            if ~isempty(cfg)
+                try
+                    cfg = ft_definetrial(cfg);
+                    data.data = ft_preprocessing(cfg);
+                    data.event = ft_read_event(dataDir);
+                    data.name = getDatasetName();
+                    
+                    currentData = currentData + 1;
+                    dataSet{currentData} = data;
+                    updateWindow(handles);
+                catch ep
+                    ed = errordlg(ep.message,'Error');
+                    waitfor(ed);
+                    updateWindow(handles);
+                    return
+                end
+            end
+            
+        case 'No'
+            % load data without defining trial
+            try
+                cfg = [];
+                cfg.dataset = dataDir;
+                data.data = ft_preprocessing(cfg);
+                data.event = ft_read_event(dataDir);
+                data.name = getDatasetName();
+                
+                currentData = currentData + 1;
+                dataSet{currentData} = data;
+                updateWindow(handles);
+            catch ep
+                ed = errordlg(ep.message,'Error');
+                waitfor(ed);
+                updateWindow(handles);
+            end
+    end
+end
+
+% --------------------------------------------------------------------
+function menuBTiData_Callback(hObject, eventdata, handles)
+% hObject    handle to menuBTiData (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+
+if length(dataSet)>9
+    ed = errordlg('You can only have 10 datasets in memory.','Error');
+    waitfor(ed);
+    return
+end
+
+dataDir = uigetdir('.','Pick a BTi data directory');
+if dataDir~=0
+    dispWait(handles);
+    data = [];
+  
+    % define trial or not
+    btnName = questdlg('Define trial now? ', ...
+                     'Define trial', ...
+                     'Yes','No','Yes');
+    switch btnName
+        case 'Yes'                       
+            cfg = RedefineTrails(dataDir);
+            if ~isempty(cfg)
+                try
+                    cfg = ft_definetrial(cfg);
+                    data.data = ft_preprocessing(cfg);
+                    data.event = ft_read_event(dataDir);
+                    data.name = getDatasetName();
+                    
+                    currentData = currentData + 1;
+                    dataSet{currentData} = data;
+                    updateWindow(handles);
+                catch ep
+                    ed = errordlg(ep.message,'Error');
+                    waitfor(ed);
+                    updateWindow(handles);
+                    return
+                end
+            end
+            
+        case 'No'
+            % load data without defining trial
+            try
+                cfg = [];
+                cfg.dataset = dataDir;
+                data.data = ft_preprocessing(cfg);
+                data.event = ft_read_event(dataDir);
+                data.name = getDatasetName();
+                
+                currentData = currentData + 1;
+                dataSet{currentData} = data;
+                updateWindow(handles);
+            catch ep
+                ed = errordlg(ep.message,'Error');
+                waitfor(ed);
+                updateWindow(handles);
+            end
+    end
+end
+
+% --------------------------------------------------------------------
+function menuYokogawaData_Callback(hObject, eventdata, handles)
+% hObject    handle to menuYokogawaData (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+
+if length(dataSet)>9
+    ed = errordlg('You can only have 10 datasets in memory.','Error');
+    waitfor(ed);
+    return
+end
+
+dataDir = uigetdir('.','Pick a Yokogawa data directory');
+if dataDir~=0
+    dispWait(handles);
+    data = [];
+  
+    % define trial or not
+    btnName = questdlg('Define trial now? ', ...
+                     'Define trial', ...
+                     'Yes','No','Yes');
+    switch btnName
+        case 'Yes'                       
+            cfg = RedefineTrails(dataDir);
+            if ~isempty(cfg)
+                try
+                    cfg = ft_definetrial(cfg);
+                    data.data = ft_preprocessing(cfg);
+                    data.event = ft_read_event(dataDir);
+                    data.name = getDatasetName();
+                    
+                    currentData = currentData + 1;
+                    dataSet{currentData} = data;
+                    updateWindow(handles);
+                catch ep
+                    ed = errordlg(ep.message,'Error');
+                    waitfor(ed);
+                    updateWindow(handles);
+                    return
+                end
+            end
+            
+        case 'No'
+            % load data without defining trial
+            try
+                cfg = [];
+                cfg.dataset = dataDir;
+                data.data = ft_preprocessing(cfg);
+                data.event = ft_read_event(dataDir);
+                data.name = getDatasetName();
+                
+                currentData = currentData + 1;
+                dataSet{currentData} = data;
+                updateWindow(handles);
+            catch ep
+                ed = errordlg(ep.message,'Error');
+                waitfor(ed);
+                updateWindow(handles);
+            end
+    end
 end
