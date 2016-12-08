@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 07-Dec-2016 18:38:03
+% Last Modified by GUIDE v2.5 08-Dec-2016 19:59:35
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1803,10 +1803,41 @@ updateWindow(handles);
 
 
 % --------------------------------------------------------------------
-function Untitled_2_Callback(hObject, eventdata, handles)
-% hObject    handle to Untitled_2 (see GCBO)
+function menuFT_SinglePlotER_Callback(hObject, eventdata, handles)
+% hObject    handle to menuFT_SinglePlotER (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+
+[cfg,data] = SinglePlotER();
+if isempty(data)
+    ed = errordlg('You must add at least 1 dataset to Plot List.','Error');
+    waitfor(ed);
+    return
+end
+
+dispWait(handles);
+
+dataPlot = [];
+for i = 1:size(data,1)
+    dataPlot{i} = eval(['dataSet{data{i,1}}.',data{i,2}]);
+end
+
+strDataPlot = 'dataPlot{1}';
+for i = 2:length(dataPlot)
+    strDataPlot = [strDataPlot,',dataPlot{',num2str(i),'}'];
+end
+
+
+try
+    figure;
+    eval(['ft_singleplotER(cfg,',strDataPlot,');']);
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
+
+updateWindow(handles);
 
 
 % --------------------------------------------------------------------
