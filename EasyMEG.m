@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 07-Dec-2016 10:26:11
+% Last Modified by GUIDE v2.5 07-Dec-2016 18:38:03
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -406,7 +406,7 @@ if isempty(dataSet)
     set(handles.menuSourceAnalysis,'Enable','Off');
     set(handles.menuImportAnatomyData,'Enable','Off');
     set(handles.menuImportEvent,'Enable','Off');
-    set(handles.menuVisualization,'Enable','Off');
+    set(handles.menuPlot,'Enable','Off');
 else
     set(handles.menuPreprocessing,'Enable','On');
     set(handles.menuDatasets,'Enable','On');
@@ -416,7 +416,7 @@ else
     set(handles.menuSourceAnalysis,'Enable','On');
     set(handles.menuImportAnatomyData,'Enable','On');
     set(handles.menuImportEvent,'Enable','On');
-    set(handles.menuVisualization,'Enable','On');
+    set(handles.menuPlot,'Enable','On');
     
     % delete 'Datasets' menus 
     h = findobj(handles.menuDatasets,'UserData','dataSetList');
@@ -1019,7 +1019,7 @@ catch ep
     return
 end
 
-dataset{currentData}.timelock = timelock;
+dataSet{currentData}.timelock = timelock;
 
 updateWindow(handles);
 
@@ -1760,3 +1760,57 @@ if dataDir~=0
             end
     end
 end
+
+
+% --------------------------------------------------------------------
+function menuFT_multiplotER_Callback(hObject, eventdata, handles)
+% hObject    handle to menuFT_multiplotER (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+
+[cfg,data] = MultiPlotER();
+if isempty(data)
+    ed = errordlg('You must add at least 1 dataset to Plot List.','Error');
+    waitfor(ed);
+    return
+end
+
+dispWait(handles);
+
+dataPlot = [];
+for i = 1:size(data,1)
+    dataPlot{i} = eval(['dataSet{data{i,1}}.',data{i,2}]);
+end
+
+strDataPlot = 'dataPlot{1}';
+for i = 2:length(dataPlot)
+    strDataPlot = [strDataPlot,',dataPlot{',num2str(i),'}'];
+end
+
+
+try
+    figure;
+    eval(['ft_multiplotER(cfg,',strDataPlot,');']);
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
+
+updateWindow(handles);
+
+
+
+
+% --------------------------------------------------------------------
+function Untitled_2_Callback(hObject, eventdata, handles)
+% hObject    handle to Untitled_2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menuFT_topoplotER_Callback(hObject, eventdata, handles)
+% hObject    handle to menuFT_topoplotER (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
