@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 08-Dec-2016 19:59:35
+% Last Modified by GUIDE v2.5 11-Dec-2016 10:54:25
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1866,3 +1866,61 @@ catch ep
 end
 
 updateWindow(handles);
+
+
+% --------------------------------------------------------------------
+function menuMTMFFT_Callback(hObject, eventdata, handles)
+% hObject    handle to menuMTMFFT (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+data = dataSet{currentData};
+
+cfg = FreqMTMFFT();
+
+if isempty(cfg)
+    return
+end
+
+dispWait(handles);
+
+try
+    cfg.method = 'mtmfft';
+    timefreq = ft_freqanalysis(cfg,data.data);
+    data.timefreq = timefreq;
+    dataSet{currentData} = data;
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
+
+updateWindow(handles);
+
+
+% --------------------------------------------------------------------
+function menuMTMCONVOL_Callback(hObject, eventdata, handles)
+% hObject    handle to menuMTMCONVOL (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menuWAVELET_Callback(hObject, eventdata, handles)
+% hObject    handle to menuWAVELET (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menuTRF_Callback(hObject, eventdata, handles)
+% hObject    handle to menuTRF (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menuMVAR_Callback(hObject, eventdata, handles)
+% hObject    handle to menuMVAR (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
