@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 11-Dec-2016 10:54:25
+% Last Modified by GUIDE v2.5 11-Dec-2016 22:26:04
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -2009,6 +2009,34 @@ try
     timefreq = ft_freqanalysis(cfg,data.data);
     data.mvar = timefreq;
     dataSet{currentData} = data;
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
+
+updateWindow(handles);
+
+
+% --------------------------------------------------------------------
+function menuSourcePlot_Callback(hObject, eventdata, handles)
+% hObject    handle to menuSourcePlot (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+
+[cfg,idx,dataName] = SourcePlot();
+if isempty(idx)
+    ed = warndlg('No data in Plot List, ploting cancel.','Error');
+    waitfor(ed);
+    return
+end
+disp(dataName)
+disp(['dataSet{idx}.',dataName]);
+data = eval(['dataSet{idx}.',dataName]);
+
+try
+    figure;
+    ft_sourceplot(cfg,data);
 catch ep
     ed = errordlg(ep.message,'Error');
     waitfor(ed);

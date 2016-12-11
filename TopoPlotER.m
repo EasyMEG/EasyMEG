@@ -61,7 +61,7 @@ handles.dataName = [];
 % Update handles structure
 guidata(hObject, handles);
 
-% Set listDataset and listData
+% Set popDataset and popData
 global dataSet;
 dataSetList = [];
 for i=1:length(dataSet)
