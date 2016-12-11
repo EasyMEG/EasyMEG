@@ -1771,7 +1771,7 @@ global dataSet;
 
 [cfg,data] = MultiPlotER();
 if isempty(data)
-    ed = errordlg('You must add at least 1 dataset to Plot List.','Error');
+    ed = warndlg('No data in Plot List, ploting cancel.','Error');
     waitfor(ed);
     return
 end
@@ -1811,7 +1811,7 @@ global dataSet;
 
 [cfg,data] = SinglePlotER();
 if isempty(data)
-    ed = errordlg('You must add at least 1 dataset to Plot List.','Error');
+    ed = warndlg('No data in Plot List, ploting cancel.','Error');
     waitfor(ed);
     return
 end
@@ -1845,3 +1845,24 @@ function menuFT_topoplotER_Callback(hObject, eventdata, handles)
 % hObject    handle to menuFT_topoplotER (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+
+[cfg,idx,dataName] = TopoPlotER();
+if isempty(idx)
+    ed = warndlg('No data in Plot List, ploting cancel.','Error');
+    waitfor(ed);
+    return
+end
+disp(dataName)
+disp(['dataSet{idx}.',dataName]);
+data = eval(['dataSet{idx}.',dataName]);
+
+try
+    figure;
+    ft_topoplotER(cfg,data);
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
+
+updateWindow(handles);
