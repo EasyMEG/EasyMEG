@@ -1888,7 +1888,7 @@ dispWait(handles);
 try
     cfg.method = 'mtmfft';
     timefreq = ft_freqanalysis(cfg,data.data);
-    data.timefreq = timefreq;
+    data.mtmfft = timefreq;
     dataSet{currentData} = data;
 catch ep
     ed = errordlg(ep.message,'Error');
@@ -1903,6 +1903,29 @@ function menuMTMCONVOL_Callback(hObject, eventdata, handles)
 % hObject    handle to menuMTMCONVOL (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+data = dataSet{currentData};
+
+cfg = FreqMTMCONVOL();
+
+if isempty(cfg)
+    return
+end
+
+dispWait(handles);
+
+try
+    cfg.method = 'mtmconvol';
+    timefreq = ft_freqanalysis(cfg,data.data);
+    data.mtmconvol = timefreq;
+    dataSet{currentData} = data;
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
+
+updateWindow(handles);
 
 
 % --------------------------------------------------------------------
@@ -1910,13 +1933,58 @@ function menuWAVELET_Callback(hObject, eventdata, handles)
 % hObject    handle to menuWAVELET (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+data = dataSet{currentData};
 
+cfg = FreqWAVELET();
+
+if isempty(cfg)
+    return
+end
+
+dispWait(handles);
+
+try
+    cfg.method = 'wavelet';
+    timefreq = ft_freqanalysis(cfg,data.data);
+    data.wavelet = timefreq;
+    dataSet{currentData} = data;
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
+
+updateWindow(handles);
 
 % --------------------------------------------------------------------
 function menuTRF_Callback(hObject, eventdata, handles)
 % hObject    handle to menuTRF (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+data = dataSet{currentData};
+
+cfg = FreqTRF();
+
+if isempty(cfg)
+    return
+end
+
+dispWait(handles);
+
+try
+    cfg.method = 'tfr';
+    timefreq = ft_freqanalysis(cfg,data.data);
+    data.tfr = timefreq;
+    dataSet{currentData} = data;
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
+
+updateWindow(handles);
 
 
 % --------------------------------------------------------------------
@@ -1924,3 +1992,26 @@ function menuMVAR_Callback(hObject, eventdata, handles)
 % hObject    handle to menuMVAR (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+data = dataSet{currentData};
+
+cfg = FreqMVAR();
+
+if isempty(cfg)
+    return
+end
+
+dispWait(handles);
+
+try
+    cfg.method = 'mvar';
+    timefreq = ft_freqanalysis(cfg,data.data);
+    data.mvar = timefreq;
+    dataSet{currentData} = data;
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
+
+updateWindow(handles);
