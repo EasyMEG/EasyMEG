@@ -188,7 +188,7 @@ function btnRemove_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 idx = get(handles.listPlot,'Value');
 plotList = get(handles.listPlot,'String');
-plotList(idx) = [];
+plotList(idx,:) = [];
 set(handles.listPlot,'String',plotList);
 
 data = handles.data;

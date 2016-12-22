@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 11-Dec-2016 22:26:04
+% Last Modified by GUIDE v2.5 12-Dec-2016 09:22:18
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1194,6 +1194,7 @@ else
     dataName = whos('-file',dataDir);
     data.headmodel = eval(dataName.name);
     
+    data.headmodel = ft_convert_units('mm',data.headmodel);
     dataSet{currentData} = data;
         
     updateWindow(handles);
@@ -1233,7 +1234,7 @@ else
     load(dataDir);
     dataName = whos('-file',dataDir);
     data.sourcemodel = eval(dataName.name);
-    
+    data.sourcemodel = ft_convert_units('mm',data.sourcemodel);
     dataSet{currentData} = data;
         
     updateWindow(handles);
@@ -1320,7 +1321,7 @@ switch ButtonName,
            
 end % switch
 
-data.headmodel = headmodel;
+data.headmodel = ft_convert_units('mm',headmodel);
 dataSet{currentData} = data;
 updateWindow(handles);
 
@@ -2037,6 +2038,119 @@ data = eval(['dataSet{idx}.',dataName]);
 try
     figure;
     ft_sourceplot(cfg,data);
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
+
+updateWindow(handles);
+
+
+% --------------------------------------------------------------------
+function menuLocalizingOscillatorySources_Callback(hObject, eventdata, handles)
+% hObject    handle to menuLocalizingOscillatorySources (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+
+[cfgFrq,cfgSrc,conA,conB,mri,name] = LocalizingOscillatorySources();
+
+if isempty(cfgFrq)||isempty(cfgSrc)||isempty(conA)||isempty(conB)||isempty(mri)||isempty(name)
+    wd = warndlg('Please set all fields for this pipeline.','Warning');
+    waitfor(wd);
+    return
+end
+
+dispWait(handles);
+
+try
+    strDataA = ['dataSet{',conA{1,1},'}.data'];
+    for i = 1:size(data,1)
+        strDataA = [strDataA,',dataSet{',conA{i,1},'}.data']
+    end
+
+    strDataB = ['dataSet{',conB{1,1},'}.data'];
+    for i = 1:size(data,1)
+        strDataB = [strDataB,',dataSet{',conB{i,1},'}.data']
+    end
+
+    eval(['dataA = ft_appenddata([],',strDataA,');']);
+    eval(['dataB = ft_appenddata([],',strDataB,');']);
+
+    % Calculating the cross spectral density matrix
+    cfgFrq.method = 'mtmfft';
+    cfgFrq.output = 'powandcsd';
+    frqA = ft_freqanalysis(cfgFrq, dataA);
+    frqB = ft_freqanalysis(cfgFrq, dataB);
+    
+    % headmodel
+    cfg = [];
+    cfg.write      = 'no';
+    [segmentedmri] = ft_volumesegment(cfg, mri);
+    cfg = [];
+    cfg.method = 'singleshell';
+    headmodel = ft_prepare_headmodel(cfg, segmentedmri);
+    
+    % Compute lead field
+    cfg                 = [];
+    cfg.grad            = freqPost.grad;
+    cfg.headmodel       = headmodel;
+    cfg.reducerank      = 2;
+    cfg.channel         = cfgSrc.channel;
+    cfg.grid.resolution = 1;   % use a 3-D grid with a 1 cm resolution
+    cfg.grid.unit       = 'mm';
+    [grid] = ft_prepare_leadfield(cfg);
+    
+    % Source Analysis: Contrast conA & conB
+    dataAll = ft_appenddata([], dataA, dataB);
+    frqAll = ft_freqanalysis(cfgFrq, dataAll);
+    
+    cfg = cfgSrc;
+    cfg.method       = 'dics';
+    cfg.grid         = grid;
+    cfg.dics.keepfilter   = 'yes';
+    cfg.dics.realfilter   = 'yes';
+    sourceAll = ft_sourceanalysis(cfg, frqAll);
+    
+    cfg.grid.filter = sourceAll.avg.filter;
+    sourceA  = ft_sourceanalysis(cfg, freqA );
+    sourceB  = ft_sourceanalysis(cfg, freqB);
+    
+    sourceDiff = sourceB;
+    sourceDiff.avg.pow = (sourceB.avg.pow - sourcA.avg.pow) ./ sourceA.avg.pow;
+    
+    mri = ft_volumereslice([], mri);
+    cfg            = [];
+    cfg.downsample = 2;
+    cfg.parameter  = 'avg.pow';
+    sourceDiffInt  = ft_sourceinterpolate(cfg, sourceDiff , mri);
+    
+    cfg = [];
+    cfg.method        = 'slice';
+    cfg.funparameter  = 'avg.pow';
+    cfg.maskparameter = cfg.funparameter;
+    cfg.funcolorlim   = [0.0 1.2];
+    cfg.opacitylim    = [0.0 1.2]; 
+    cfg.opacitymap    = 'rampup'; 
+    figure;
+    ft_sourceplot(cfg, sourceDiffInt);
+    
+    data.data = dataAll;
+    data.name = name;
+    data.dataA = dataA;
+    data.dataB = dataB;
+    data.frqA = frqA;
+    data.frqB = frqB;
+    data.mtmfft = frqAll;
+    data.sourceA = sourceA;
+    data.sourceB = sourceB;
+    data.sourceDiff = sourceDiff;
+    data.sourceDiffInt = sourceDiffInt;
+    
+    dataSet{size(dataSet,1)+1} = data;
+    currentData = size(dataSet,1);
+    
 catch ep
     ed = errordlg(ep.message,'Error');
     waitfor(ed);
