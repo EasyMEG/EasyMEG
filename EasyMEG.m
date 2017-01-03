@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 12-Dec-2016 09:22:18
+% Last Modified by GUIDE v2.5 23-Dec-2016 11:24:27
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -347,15 +347,15 @@ function dispWait(handles)
 % handles    structure with handles and user data (see GUIDATA)
 set(handles.panelMain,'Title','Processing...');
 
-set(handles.text1, 'String','');
-set(handles.text2, 'String','');
-set(handles.text3, 'String','Please wait');
-set(handles.text4, 'String','Operation is in progress');
-set(handles.text5 ,'String','Do not perform any  operations');
-set(handles.text6 ,'String','');
-set(handles.text7 ,'String','');
-set(handles.text8 ,'String','');
-set(handles.text9 ,'String','');
+set(handles.text11, 'String','');                               set(handles.text12, 'String','');
+set(handles.text21, 'String','');                               set(handles.text22, 'String','');
+set(handles.text31, 'String','Please wait');                    set(handles.text32, 'String','');
+set(handles.text41, 'String','Progressing...');                 set(handles.text42, 'String','');
+set(handles.text51 ,'String','Do not perform any operation');   set(handles.text52, 'String','');
+set(handles.text61 ,'String','');                               set(handles.text62, 'String','');
+set(handles.text71 ,'String','');                               set(handles.text72, 'String','');
+set(handles.text81 ,'String','');                               set(handles.text82, 'String','');
+set(handles.text91 ,'String','');                               set(handles.text92, 'String','');
 
 drawnow();
 
@@ -369,30 +369,40 @@ global currentData;
 % display info on the main window
 if isempty(dataSet)
     set(handles.panelMain,'Title','Please load or import data');
-    set(handles.text1, 'String','');
-    set(handles.text2, 'String','');
-    set(handles.text3, 'String','');
-    set(handles.text4, 'String','');
-    set(handles.text5 ,'String','');
-    set(handles.text6 ,'String','');
-    set(handles.text7 ,'String','');
-    set(handles.text8 ,'String','');
-    set(handles.text9 ,'String','');
+    set(handles.text11, 'String','');set(handles.text12, 'String','');
+    set(handles.text21, 'String','');set(handles.text22, 'String','');
+    set(handles.text31, 'String','');set(handles.text32, 'String','');
+    set(handles.text41, 'String','');set(handles.text42, 'String','');
+    set(handles.text51 ,'String','');set(handles.text52, 'String','');
+    set(handles.text61 ,'String','');set(handles.text62, 'String','');
+    set(handles.text71 ,'String','');set(handles.text72, 'String','');
+    set(handles.text81 ,'String','');set(handles.text82, 'String','');
+    set(handles.text91 ,'String','');set(handles.text92, 'String','');
 
 else
     data = dataSet{currentData}.data;
     dataName = dataSet{currentData}.name;
     
     set(handles.panelMain,'Title',strcat('Dataset  #',num2str(currentData),'  --',dataName));
-    set(handles.text1, 'String','');
-    set(handles.text2, 'String',['Sampling rate                   ',num2str(data.fsample)]);
-    set(handles.text3, 'String',['Number of channels              ',num2str(data.hdr.nChans)]);
-    set(handles.text4, 'String',['Number of samples               ',num2str(data.hdr.nSamples*data.hdr.nTrials)]);
-    set(handles.text5 ,'String',['Number of trails                ',num2str(size(data.trial,2))]);
-    set(handles.text6 ,'String',['Coordsys type                   ',data.grad.coordsys]);
-    set(handles.text7 ,'String',['Data format                     ',data.grad.type]);
-    set(handles.text8 ,'String',['Unit                            ',data.grad.unit]);
-    set(handles.text9 ,'String','');
+    set(handles.text11, 'String','');
+    set(handles.text62, 'String',['Sampling rate                   ',num2str(data.fsample)]);
+    set(handles.text31, 'String',['Number of channels              ',num2str(data.hdr.nChans)]);
+    set(handles.text41, 'String',['Number of samples               ',num2str(data.hdr.nSamples*data.hdr.nTrials)]);
+    set(handles.text51 ,'String',['Number of trails                ',num2str(size(data.trial,2))]);
+    set(handles.text61 ,'String',['Coordsys type                   ',data.grad.coordsys]);
+    set(handles.text71 ,'String',['Data format                     ',data.grad.type]);
+    set(handles.text81 ,'String',['Unit                            ',data.grad.unit]);
+    set(handles.text91 ,'String','');
+    
+    set(handles.text11, 'String','');                   set(handles.text12, 'String','');
+    set(handles.text21, 'String','Sampling rate');      set(handles.text22, 'String',num2str(data.fsample));
+    set(handles.text31, 'String','Number of channels'); set(handles.text32, 'String',num2str(data.hdr.nChans));
+    set(handles.text41, 'String','Number of samples');  set(handles.text42, 'String',num2str(data.hdr.nSamples*data.hdr.nTrials));
+    set(handles.text51 ,'String','Number of trails');   set(handles.text52, 'String',num2str(size(data.trial,2)));
+    set(handles.text61 ,'String','Coordsys type');      set(handles.text62, 'String',data.grad.coordsys);
+    set(handles.text71 ,'String','Data format');        set(handles.text72, 'String',data.grad.type);
+    set(handles.text81 ,'String','Unit');               set(handles.text82, 'String',data.grad.unit);
+    set(handles.text91 ,'String','');                   set(handles.text92, 'String','');
 
 end
 
