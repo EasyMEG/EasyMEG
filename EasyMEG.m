@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 23-Dec-2016 11:24:27
+% Last Modified by GUIDE v2.5 04-Jan-2017 15:27:28
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -2160,6 +2160,37 @@ try
     
     dataSet{size(dataSet,1)+1} = data;
     currentData = size(dataSet,1);
+    
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
+
+updateWindow(handles);
+
+
+% --------------------------------------------------------------------
+function menuLeadfield_Callback(hObject, eventdata, handles)
+% hObject    handle to menuLeadfield (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+
+cfg = LeadField();
+
+if isempty(cfg)
+    return
+end
+
+data = dataSet{currentData};
+
+dispWait(handles);
+
+try
+    leadfield = ft_prepare_leadfield(cfg,data.data);
+    data.leadfield = leadfield;
+    dataSet{currentData} = data;
     
 catch ep
     ed = errordlg(ep.message,'Error');
