@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 06-Jan-2017 21:13:43
+% Last Modified by GUIDE v2.5 06-Jan-2017 22:04:26
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -2330,6 +2330,96 @@ try
     newdataset.name = name;
     
     dataSet{size(dataSet,1)+1} = newdataset;
+    currentData = size(dataSet,1);
+    
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
+
+updateWindow(handles);
+
+
+% --------------------------------------------------------------------
+function menuSourceAnalysis_Single_Callback(hObject, eventdata, handles)
+% hObject    handle to menuSourceAnalysis_Single (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+
+[cfg,data,name,mri,flagNAI] = SourceAnalysis_Single();
+
+if isempty(cfg)||isempty(mri)||isempty(data)
+
+    if isempty(cfg)&&isempty(mri)||isempty(data)
+        return
+    end
+    
+    wd = warndlg('Please set all fields for this pipeline.','Warning');
+    waitfor(wd);
+    return
+    
+end
+
+dispWait(handles);
+
+try
+    % Source Analysis: Contrast conA & conB
+
+    source = ft_sourceanalysis(cfg, data);
+    
+    newdata = [];
+    
+    if flagNAI
+        % compute NAI
+    	sourceNAI = source;
+        sourceNAI.avg.pow = source.avg.pow ./ source.avg.noise;
+        
+        mri = ft_volumereslice([], mri);
+        cfg = [];
+        cfg.downsample = 2;
+        cfg.parameter = 'avg.pow';
+        sourceNAIInt = ft_sourceinterpolate(cfg, sourceNAI , mri);
+        
+        cfg = [];
+        cfg.method        = 'slice';
+        cfg.funparameter  = 'avg.pow';
+        cfg.maskparameter = cfg.funparameter;
+        cfg.funcolorlim   = [0.0 1.2];
+        cfg.opacitylim    = [0.0 1.2]; 
+        cfg.opacitymap    = 'rampup'; 
+        figure;
+        ft_sourceplot(cfg, sourceNAIInt);
+        
+        newdata.sourceNAI = sourceNAI;
+        newdata.sourceNAIInt = sourceNAIInt;
+        newdata.sourceFilter = sourceNAI.avg.filter;
+    else
+        mri = ft_volumereslice([], mri);
+        cfg            = [];
+        cfg.downsample = 2;
+        cfg.parameter  = 'avg.pow';
+        sourceInt  = ft_sourceinterpolate(cfg, source , mri);
+
+        cfg = [];
+        cfg.method        = 'slice';
+        cfg.funparameter  = 'avg.pow';
+        cfg.maskparameter = cfg.funparameter;
+        cfg.funcolorlim   = [0.0 1.2];
+        cfg.opacitylim    = [0.0 1.2]; 
+        cfg.opacitymap    = 'rampup'; 
+        figure;
+        ft_sourceplot(cfg, sourceInt);
+        
+        newdata.source = sourceNAI;
+        newdata.sourceInt = sourceNAIInt;
+        newdata.sourceFilter = source.avg.filter;
+    end
+
+    newdata.name = name;
+
+    dataSet{size(dataSet,1)+1} = newdata;
     currentData = size(dataSet,1);
     
 catch ep
