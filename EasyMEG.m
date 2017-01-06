@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 04-Jan-2017 15:27:28
+% Last Modified by GUIDE v2.5 06-Jan-2017 09:17:39
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -413,7 +413,7 @@ if isempty(dataSet)
     set(handles.menuSaveAsFieldTripData,'Enable','Off');
     set(handles.menuSaveAsEasyMegData,'Enable','Off');
     set(handles.menuSensorLevelAnalysis,'Enable','Off');
-    set(handles.menuSourceAnalysis,'Enable','Off');
+    set(handles.menuSource,'Enable','Off');
     set(handles.menuImportAnatomyData,'Enable','Off');
     set(handles.menuImportEvent,'Enable','Off');
     set(handles.menuPlot,'Enable','Off');
@@ -423,7 +423,7 @@ else
     set(handles.menuSaveAsFieldTripData,'Enable','On');
     set(handles.menuSaveAsEasyMegData,'Enable','On');
     set(handles.menuSensorLevelAnalysis,'Enable','On');
-    set(handles.menuSourceAnalysis,'Enable','On');
+    set(handles.menuSource,'Enable','On');
     set(handles.menuImportAnatomyData,'Enable','On');
     set(handles.menuImportEvent,'Enable','On');
     set(handles.menuPlot,'Enable','On');
@@ -1252,8 +1252,8 @@ end
 
 
 % --------------------------------------------------------------------
-function menuSourceAnalysis_Callback(hObject, eventdata, handles)
-% hObject    handle to menuSourceAnalysis (see GCBO)
+function menuSource_Callback(hObject, eventdata, handles)
+% hObject    handle to menuSource (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
@@ -1782,6 +1782,9 @@ global dataSet;
 
 [cfg,data] = MultiPlotER();
 if isempty(data)
+    if isempty(cfg)&&isempty(data)
+        return
+    end
     ed = warndlg('No data in Plot List, ploting cancel.','Error');
     waitfor(ed);
     return
@@ -1822,6 +1825,9 @@ global dataSet;
 
 [cfg,data] = SinglePlotER();
 if isempty(data)
+    if isempty(cfg)&&isempty(data)
+        return
+    end
     ed = warndlg('No data in Plot List, ploting cancel.','Error');
     waitfor(ed);
     return
@@ -1860,6 +1866,10 @@ global dataSet;
 
 [cfg,idx,dataName] = TopoPlotER();
 if isempty(idx)
+    if isempty(cfg)&&isempty(idx)&&isempty(dataName)
+        return
+    end
+    
     ed = warndlg('No data in Plot List, ploting cancel.','Error');
     waitfor(ed);
     return
@@ -2037,6 +2047,9 @@ global dataSet;
 
 [cfg,idx,dataName] = SourcePlot();
 if isempty(idx)
+    if isempty(cfg)&&isempty(idx)&&isempty(dataName)
+        return
+    end
     ed = warndlg('No data in Plot List, ploting cancel.','Error');
     waitfor(ed);
     return
@@ -2067,6 +2080,10 @@ global currentData;
 [cfgFrq,cfgSrc,conA,conB,mri,name] = LocalizingOscillatorySources();
 
 if isempty(cfgFrq)||isempty(cfgSrc)||isempty(conA)||isempty(conB)||isempty(mri)||isempty(name)
+    if isempty(cfgFrq)&&isempty(cfgSrc)&&isempty(conA)&&isempty(conB)&&isempty(mri)&&isempty(name)
+        return
+    end
+    
     wd = warndlg('Please set all fields for this pipeline.','Warning');
     waitfor(wd);
     return
@@ -2198,3 +2215,88 @@ catch ep
 end
 
 updateWindow(handles);
+
+
+% --------------------------------------------------------------------
+function menuSourceAnalysis_Callback(hObject, eventdata, handles)
+% hObject    handle to menuSourceAnalysis (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+
+[cfg,conA,conB,whole,mri] = SourceAnalysis();
+
+if isempty(cfg)||isempty(conA)||isempty(conB)||isempty(mri)||isempty(whole)
+
+    if isempty(cfg)&&isempty(conA)&&isempty(conB)&&isempty(mri)||isempty(whole)
+        return
+    end
+    
+    wd = warndlg('Please set all fields for this pipeline.','Warning');
+    waitfor(wd);
+    return
+    
+end
+
+dispWait(handles);
+
+try
+    % Source Analysis: Contrast conA & conB
+
+    sourceAll = ft_sourceanalysis(cfg, whole);
+    
+    cfg.grid.filter = sourceAll.avg.filter;
+    sourceA  = ft_sourceanalysis(cfg, conA );
+    sourceB  = ft_sourceanalysis(cfg, conB);
+    
+    sourceDiff = sourceB;
+    sourceDiff.avg.pow = (sourceB.avg.pow - sourcA.avg.pow) ./ sourceA.avg.pow;
+    
+    mri = ft_volumereslice([], mri);
+    cfg            = [];
+    cfg.downsample = 2;
+    cfg.parameter  = 'avg.pow';
+    sourceDiffInt  = ft_sourceinterpolate(cfg, sourceDiff , mri);
+    
+    cfg = [];
+    cfg.method        = 'slice';
+    cfg.funparameter  = 'avg.pow';
+    cfg.maskparameter = cfg.funparameter;
+    cfg.funcolorlim   = [0.0 1.2];
+    cfg.opacitylim    = [0.0 1.2]; 
+    cfg.opacitymap    = 'rampup'; 
+    figure;
+    ft_sourceplot(cfg, sourceDiffInt);
+    
+    
+    prompt={'Please input a dataset name for the results:'};
+    name='Input dataset name';
+    numlines=1;
+    defaultanswer={'Source'};
+ 
+    answer=inputdlg(prompt,name,numlines,defaultanswer);
+    
+    
+
+    data.name = answer;
+
+    data.conA = conA;
+    data.conB = conB;
+    data.wholedata = whole;
+    data.sourceA = sourceA;
+    data.sourceB = sourceB;
+    data.sourceDiff = sourceDiff;
+    data.sourceDiffInt = sourceDiffInt;
+    data.sourceFilter  = sourceAll.avg.filter;
+    
+    dataSet{size(dataSet,1)+1} = data;
+    currentData = size(dataSet,1);
+    
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
+
+updateWindow(handles);
+
