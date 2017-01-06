@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 06-Jan-2017 09:17:39
+% Last Modified by GUIDE v2.5 06-Jan-2017 21:13:43
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -2093,12 +2093,12 @@ dispWait(handles);
 
 try
     strDataA = ['dataSet{',conA{1,1},'}.data'];
-    for i = 1:size(data,1)
+    for i = 1:size(conA,1)
         strDataA = [strDataA,',dataSet{',conA{i,1},'}.data']
     end
 
     strDataB = ['dataSet{',conB{1,1},'}.data'];
-    for i = 1:size(data,1)
+    for i = 1:size(conB,1)
         strDataB = [strDataB,',dataSet{',conB{i,1},'}.data']
     end
 
@@ -2300,3 +2300,41 @@ end
 
 updateWindow(handles);
 
+
+% --------------------------------------------------------------------
+function menuAppendData_Callback(hObject, eventdata, handles)
+% hObject    handle to menuAppendData (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currenData;
+
+[data,name] = AppendData();
+
+if isempty(data)
+    return
+end
+
+dispWait(handles);
+
+try
+    strData = ['dataSet{',data{1,1},'}.data'];
+    for i = 1:size(data,1)
+        strData = [strData,',dataSet{',data{i,1},'}.data']
+    end
+
+    eval(['newdata = ft_appenddata([],',strData,');']);
+    
+    newdataset = [];
+    newdataset.data = newdata;
+    newdataset.name = name;
+    
+    dataSet{size(dataSet,1)+1} = newdataset;
+    currentData = size(dataSet,1);
+    
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
+
+updateWindow(handles);
