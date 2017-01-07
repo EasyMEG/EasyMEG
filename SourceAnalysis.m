@@ -248,40 +248,40 @@ cfg.permutation = permutation{get(handles.popPermutation,'Value')};
 randomization = {'no','yes'};
 cfg.randomization = randomization{get(handles.popRandomization,'Value')};
 
-cfg.numrandomization = eval{get(handles.editNumrandomization,'String')};
+cfg.numrandomization = eval(get(handles.editNumrandomization,'String'));
 
 pseudovalue = {'no','yes'};
 cfg.pseudovalue = pseudovalue{get(handles.popPseudovalue,'Value')};
 
-cfg.numpermutation = eval{get(handles.editNumpermutation,'String')};
+cfg.numpermutation = eval(get(handles.editNumpermutation,'String'));
 
 normalize = {'no','yes'};
 cfg.normalize = normalize{get(handles.popNormalize,'Value')};
 
-cfg.reduce = eval{get(handles.editReduce,'String')};
+cfg.reduce = eval(get(handles.editReduce,'String'));
 
 if ~isempty(get(handles.editLatency,'String'))
-    cfg.latency = eval{get(handles.editLatency,'String')};
+    cfg.latency = eval(get(handles.editLatency,'String'));
 end
 
 if ~isempty(get(handles.editLambda,'String'))
-    cfg.lambda = eval{get(handles.editlambda,'String')};
+    cfg.lambda = eval(get(handles.editlambda,'String'));
 end
 
 if ~isempty(get(handles.editRefchan,'String'))
-    cfg.refchan = eval{get(handles.editRefchan,'String')};
+    cfg.refchan = eval(get(handles.editRefchan,'String'));
 end
 
 if ~isempty(get(handles.editRefdip,'String'))
-    cfg.refdip = eval{get(handles.editRefdip,'String')};
+    cfg.refdip = eval(get(handles.editRefdip,'String'));
 end
 
 if ~isempty(get(handles.editSupchan,'String'))
-    cfg.supchan = eval{get(handles.editSupchan,'String')};
+    cfg.supchan = eval(get(handles.editSupchan,'String'));
 end
 
 if ~isempty(get(handles.editSupdip,'String'))
-    cfg.supdip = eval{get(handles.editSupdip,'String')};
+    cfg.supdip = eval(get(handles.editSupdip,'String'));
 end
 
 keeptrial = {'no','yes'};

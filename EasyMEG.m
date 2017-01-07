@@ -1987,7 +1987,7 @@ global dataSet;
 global currentData;
 data = dataSet{currentData};
 
-cfg = FreqTRF();
+cfg = FreqTFR();
 
 if isempty(cfg)
     return
