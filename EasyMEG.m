@@ -2307,7 +2307,7 @@ function menuAppendData_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global dataSet;
-global currenData;
+global currentData;
 
 [data,name] = AppendData();
 
@@ -2317,10 +2317,12 @@ end
 
 dispWait(handles);
 
+strData = [];
+
 try
-    strData = ['dataSet{',data{1,1},'}.data'];
-    for i = 1:size(data,1)
-        strData = [strData,',dataSet{',data{i,1},'}.data']
+    strData = ['dataSet{',num2str(data(1)),'}.data'];
+    for i = 2:size(data,1)
+        strData = [strData,',dataSet{',num2str(data(i)),'}.data'];
     end
 
     eval(['newdata = ft_appenddata([],',strData,');']);
@@ -2333,8 +2335,8 @@ try
     currentData = size(dataSet,1);
     
 catch ep
-    ed = errordlg(ep.message,'Error');
-    waitfor(ed);
+   ed = errordlg(ep.message,'Error');
+   waitfor(ed);
 end
 
 updateWindow(handles);

@@ -22,7 +22,7 @@ function varargout = LowPassFilter(varargin)
 
 % Edit the above text to modify the response to help LowPassFilter
 
-% Last Modified by GUIDE v2.5 26-Aug-2016 11:47:42
+% Last Modified by GUIDE v2.5 07-Jan-2017 21:42:44
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -85,33 +85,7 @@ function btnOk_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-channel = [];
-
-if get(handles.checkboxMEG,'value')
-    channel{length(channel)+1} = 'meg';
-end
-
-if get(handles.checkboxEEG,'value')
-    channel{length(channel)+1} = 'eeg';
-end
-
-if get(handles.checkboxEOG,'value')
-    channel{length(channel)+1} = 'eog';
-end
-
-if get(handles.checkboxECG,'value')
-    channel{length(channel)+1} = 'ecg';
-end
-
-if get(handles.checkboxEMG,'value')
-    channel{length(channel)+1} = 'emg';
-end
-
-if get(handles.checkboxALL,'value')
-    channel = 'all';
-end
-
-handles.cfgchn = channel;
+handles.cfgchn = eval(get(handles.editChannel,'String'));
 
 cfg = [];
 cfg.lpfilter = 'yes';
@@ -129,84 +103,6 @@ function btnCancel_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 uiresume(handles.figure1);
 
-
-
-% --- Executes during object creation, after setting all properties.
-function editLowPass_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editLowPass (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on button press in checkboxALL.
-function checkboxALL_Callback(hObject, eventdata, handles)
-% hObject    handle to checkboxALL (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of checkboxALL
-
-
-
-function editLowPass_Callback(hObject, eventdata, handles)
-% hObject    handle to editLowPass (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of editLowPass as text
-%        str2double(get(hObject,'String')) returns contents of editLowPass as a double
-
-
-
-% --- Executes on button press in checkboxMEG.
-function checkboxMEG_Callback(hObject, eventdata, handles)
-% hObject    handle to checkboxMEG (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of checkboxMEG
-
-
-% --- Executes on button press in checkboxEEG.
-function checkboxEEG_Callback(hObject, eventdata, handles)
-% hObject    handle to checkboxEEG (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of checkboxEEG
-
-
-% --- Executes on button press in checkboxEOG.
-function checkboxEOG_Callback(hObject, eventdata, handles)
-% hObject    handle to checkboxEOG (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of checkboxEOG
-
-
-% --- Executes on button press in checkboxECG.
-function checkboxECG_Callback(hObject, eventdata, handles)
-% hObject    handle to checkboxECG (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of checkboxECG
-
-
-% --- Executes on button press in checkboxEMG.
-function checkboxEMG_Callback(hObject, eventdata, handles)
-% hObject    handle to checkboxEMG (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of checkboxEMG
 
 
 % --- Executes when user attempts to close figure1.

@@ -22,7 +22,7 @@ function varargout = AppendData(varargin)
 
 % Edit the above text to modify the response to help AppendData
 
-% Last Modified by GUIDE v2.5 06-Jan-2017 21:01:47
+% Last Modified by GUIDE v2.5 07-Jan-2017 22:27:21
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -68,9 +68,6 @@ for i=1:length(dataSet)
 end
 set(handles.listDataset,'String',dataSetList);
 
-data = dataSet{1};
-dataList = fieldnames(data);
-set(handles.listData,'String',dataList);
 
 % UIWAIT makes AppendData wait for user response (see UIRESUME)
 uiwait(handles.figure1);
@@ -85,25 +82,10 @@ function varargout = AppendData_OutputFcn(hObject, eventdata, handles)
 
 % Get default command line output from handles structure
 varargout{1} = handles.data;
-varargout{1} = handles.name;
+varargout{2} = handles.name;
+
 delete(handles.figure1);
 
-% --- Executes on selection change in listDataset.
-function listDataset_Callback(hObject, eventdata, handles)
-% hObject    handle to listDataset (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns listDataset contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from listDataset
-global dataSet;
-
-idx = get(hObject,'Value');
-data = dataSet{idx};
-
-dataList = fieldnames(data);
-
-set(handles.listData,'String',dataList);
 
 
 % --- Executes on button press in btnAdd.
@@ -111,25 +93,20 @@ function btnAdd_Callback(hObject, eventdata, handles)
 % hObject    handle to btnAdd (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-valPlotList = [];
 
 datasetList = get(handles.listDataset,'String');
-datasetSelect = get(handles.listDataset,'Value');
-valPlotList{1} = datasetSelect;
+datasetIdx = double(get(handles.listDataset,'Value'));
+strNewDataList = datasetList{datasetIdx};
 
-strPlotList = get(handles.listData,'String');
-strPlotList = strPlotList{get(handles.listData,'Value')};
-valPlotList{2} = strPlotList;
-strPlotList = string([datasetList{datasetSelect},'-->',strPlotList]);
 
-temp = get(handles.listPlot,'String');
+temp = get(handles.listNewData,'String');
 if isequal(temp,'')
     temp = [];
 end
-set(handles.listPlot,'String',[temp;strPlotList]);
+set(handles.listNewData,'String',[temp;strNewDataList]);
 
 temp2 = handles.data;
-temp2 = [temp2;valPlotList];
+temp2 = [temp2;datasetIdx];
 
 handles.data = temp2;
 guidata(hObject, handles);
@@ -139,10 +116,10 @@ function btnRemove_Callback(hObject, eventdata, handles)
 % hObject    handle to btnRemove (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-idx = get(handles.listPlot,'Value');
-plotList = get(handles.listPlot,'String');
-plotList(idx,:) = [];
-set(handles.listPlot,'String',plotList);
+idx = get(handles.listNewData,'Value');
+newDataList = get(handles.listNewData,'String');
+newDataList(idx,:) = [];
+set(handles.listNewData,'String',newDataList);
 
 data = handles.data;
 data(idx,:) = [];
@@ -195,3 +172,4 @@ else
 % The GUI is no longer waiting, just close it
     delete(hObject);
 end
+
