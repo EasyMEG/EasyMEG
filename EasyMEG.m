@@ -1059,14 +1059,14 @@ end
 
 dispWait(handles);
 
-try
+%try
     tfr = ft_freqanalysis(cfg,data);
-catch ep
-    ed = errordlg(ep.message,'Error');
-    waitfor(ed);
-    updateWindow(handles);
-    return
-end
+% catch ep
+%     ed = errordlg(ep.message,'Error');
+%     waitfor(ed);
+%     updateWindow(handles);
+%     return
+% end
 
 dataSet{currentData}.tfr = tfr;
 updateWindow(handles);
@@ -1083,6 +1083,7 @@ global currentData;
 
 data = dataSet{currentData}.data;
 
+cfg = [];
 cfg = CorticoMuscularCoherence();
 
 if isempty(cfg)
@@ -1090,17 +1091,20 @@ if isempty(cfg)
 end
 
 dispWait(handles);
+
 try
-    csd = ft_freqanalysis(cfg,data);
+csd = ft_freqanalysis(cfg,data);
 catch ep
     ed = errordlg(ep.message,'Error');
     waitfor(ed);
     updateWindow(handles);
+    return
 end
 
+channelcmb = cfg.channelcmb;
 cfg                 = [];
 cfg.method          = 'coh';
-cfg.channelcmb      = {'MEG' 'EMG'};
+cfg.channelcmb      = channelcmb;
 
 try
     conn = ft_connectivityanalysis(cfg, csd);
@@ -1331,7 +1335,8 @@ switch ButtonName,
            
 end % switch
 
-data.headmodel = ft_convert_units('mm',headmodel);
+%data.headmodel = ft_convert_units('mm',headmodel);
+data.headmodel = headmodel;
 dataSet{currentData} = data;
 updateWindow(handles);
 

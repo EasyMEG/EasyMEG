@@ -82,10 +82,8 @@ function btnOk_Callback(hObject, eventdata, handles)
 % hObject    handle to btnOk (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-channel = get(handles.editChannel,'String');
-
 cfg = [];
-cfg.channel = channel;
+cfg.channel = eval(get(handles.editChannel,'String'));
 cfg.trails = eval(get(handles.editTrails,'String'));
 cfg.method = 'mtmconvol';
 cfg.taper  = 'hanning';
@@ -98,8 +96,8 @@ end
 
 cfg.foi       = eval(get(handles.editFOI,'String'));
 cfg.toi       = eval(get(handles.editTOI,'String'));
-cfg.t_ftimwin = str2double(get(handles.editTimeWindow,'String')) * ones(length(cfg.foi), 1);
-
+%cfg.t_ftimwin = str2double(get(handles.editTimeWindow,'String')) * ones(length(cfg.foi), 1);
+cfg.t_ftimwin = eval(get(handles.editTimeWindow,'String'));
 if get(handles.checkboxPad,'Value')
     cfg.pad = str2double(get(handles.editPad,'String'));
 end

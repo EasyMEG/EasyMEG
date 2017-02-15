@@ -83,11 +83,8 @@ function btnOk_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-channel = get(handles.editChannel,'String');
-
-
 cfg = [];
-cfg.channel = channel;
+cfg.channel = eval(get(handles.editChannel,'String'));
 cfg.trails = eval(get(handles.editTrails,'String'));
 
 if get(handles.rbtnKeepTrailsYes,'Value')
