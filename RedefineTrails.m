@@ -236,7 +236,19 @@ function listboxEventType_Callback(hObject, eventdata, handles)
 % Hints: contents = cellstr(get(hObject,'String')) returns listboxEventType contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from listboxEventType
 global listEventValue
-set(handles.listboxEventValue,'String',listEventValue{get(hObject,'Value')});
+% set(handles.listboxEventValue,'String',listEventValue{get(hObject,'Value')});
+
+seltype = get(gcf,'selectiontype'); % Right-or-left click?
+
+switch seltype
+    case 'alt'
+    case 'normal'
+        set(handles.listboxEventValue,'String',listEventValue{get(hObject,'Value')});
+    otherwise
+        eventType = get(handles.listboxEventType,'String');
+        eventType = eventType(get(handles.listboxEventType,'Value'));
+        set(handles.editEventType,'String',eventType);
+end
 
 
 % --- Executes during object creation, after setting all properties.
@@ -260,7 +272,19 @@ function listboxEventValue_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns listboxEventValue contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from listboxEventValue
+global listEventValue
+% set(handles.listboxEventValue,'String',listEventValue{get(hObject,'Value')});
 
+seltype = get(gcf,'selectiontype'); % Right-or-left click?
+
+switch seltype
+    case 'alt'
+    case 'normal'
+    otherwise
+        eventValue = get(handles.listboxEventValue,'String');
+        eventValue = eventValue(get(handles.listboxEventValue,'Value'));
+        set(handles.editEventValue,'String',eventValue);
+end
 
 % --- Executes during object creation, after setting all properties.
 function listboxEventValue_CreateFcn(hObject, eventdata, handles)
