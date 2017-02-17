@@ -320,7 +320,7 @@ if ~isempty(get(handles.editToi,'String'))
 end
 
 if ~isempty(get(handles.editT_Ftimwin,'String'))
-    cfg.toi   = eval(get(handles.editT_Ftimwin,'String'));
+    cfg.t_ftimwin   = eval(get(handles.editT_Ftimwin,'String'));
 end
 
 handles.cfg = cfg;
