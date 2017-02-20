@@ -22,7 +22,7 @@ function varargout = FreqTFR(varargin)
 
 % Edit the above text to modify the response to help FreqTFR
 
-% Last Modified by GUIDE v2.5 11-Dec-2016 17:13:00
+% Last Modified by GUIDE v2.5 20-Feb-2017 15:09:13
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -262,8 +262,8 @@ end
 
 
 % --- Executes during object creation, after setting all properties.
-function editTapSmoFrq_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editTapSmoFrq (see GCBO)
+function editTOI_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editTOI (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -305,8 +305,8 @@ padtype         = {'zero','mean','localmean','edge','mirror','nan','remove'};
 cfg.padtype     = padtype{get(handles.popPadType,'Value')};
 cfg.polyremoval = eval(get(handles.editPolyremoval,'String'));
 
-if ~isempty(get(handles.editTapSmoFrq,'String'))
-    cfg.tapsmofrq   = eval(get(handles.editTapSmoFrq,'String'));
+if ~isempty(get(handles.editTOI,'String'))
+    cfg.toi   = eval(get(handles.editTOI,'String'));
 end
 
 if get(handles.rbtnFoiBand,'Value')
@@ -315,16 +315,12 @@ else
     cfg.foi = eval(get(handles.editFoi,'String'));
 end
 
-if ~isempty(get(handles.editToi,'String'))
-    cfg.toi   = eval(get(handles.editToi,'String'));
-end
 if ~isempty(get(handles.editWidth,'String'))
     cfg.width   = eval(get(handles.editWidth,'String'));
 end
 if ~isempty(get(handles.editGWidth,'String'))
     cfg.gwidth   = eval(get(handles.editGWidth,'String'));
 end
-
 handles.cfg = cfg;
 
 guidata(hObject, handles);

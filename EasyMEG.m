@@ -2014,36 +2014,6 @@ updateWindow(handles);
 
 
 % --------------------------------------------------------------------
-function menuMVAR_Callback(hObject, eventdata, handles)
-% hObject    handle to menuMVAR (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-global dataSet;
-global currentData;
-data = dataSet{currentData};
-
-cfg = FreqMVAR();
-
-if isempty(cfg)
-    return
-end
-
-dispWait(handles);
-
-try
-    cfg.method = 'mvar';
-    timefreq = ft_freqanalysis(cfg,data.data);
-    data.mvar = timefreq;
-    dataSet{currentData} = data;
-catch ep
-    ed = errordlg(ep.message,'Error');
-    waitfor(ed);
-end
-
-updateWindow(handles);
-
-
-% --------------------------------------------------------------------
 function menuSourcePlot_Callback(hObject, eventdata, handles)
 % hObject    handle to menuSourcePlot (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
