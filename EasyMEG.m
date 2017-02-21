@@ -1311,9 +1311,10 @@ switch ButtonName,
         end
 	case 'localspheres',
         cfg = [];
-        cfg.grad = data.grad;
+        cfg.grad = data.data.grad;
         cfg.method = 'localspheres';
         try
+            figure;
             headmodel = ft_prepare_headmodel(cfg, segmentedmri);
         catch ep
             ed = errordlg(ep.message,'Error');
