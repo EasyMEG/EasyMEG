@@ -96,7 +96,7 @@ function btnAdd_Callback(hObject, eventdata, handles)
 
 datasetList = get(handles.listDataset,'String');
 datasetIdx = double(get(handles.listDataset,'Value'));
-strNewDataList = datasetList{datasetIdx};
+strNewDataList = datasetList(datasetIdx);
 
 
 temp = get(handles.listNewData,'String');
