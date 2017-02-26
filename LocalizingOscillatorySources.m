@@ -158,46 +158,9 @@ idx = get(hObject,'Value');
 data = dataSet{idx};
 
 dataList = fieldnames(data);
-
+set(handles.listData,'Value',1);
 set(handles.listData,'String',dataList);
 
-% --- Executes during object creation, after setting all properties.
-function listDataset_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to listDataset (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: listbox controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function listData_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to listData (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: listbox controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function listConA_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to listConA (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: listbox controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
 
 
 % --- Executes on button press in btnAddA.
@@ -244,17 +207,6 @@ handles.conA = data;
 
 guidata(hObject,handles);
 
-% --- Executes during object creation, after setting all properties.
-function listConB_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to listConB (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: listbox controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
 
 
 % --- Executes on button press in btnAddB.
@@ -301,30 +253,6 @@ handles.conB = data;
 
 guidata(hObject,handles);
 
-% --- Executes during object creation, after setting all properties.
-function editTapsmofrq_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editTapsmofrq (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function editFoilim_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editFoilim (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
 
 
 % --- Executes on selection change in popHDMDataset.
@@ -341,59 +269,8 @@ idx = get(hObject,'Value');
 data = dataSet{idx};
 
 dataList = fieldnames(data);
-
+set(handles.popHDMData,'Value',1);
 set(handles.popHDMData,'String',dataList);
-
-% --- Executes during object creation, after setting all properties.
-function popHDMDataset_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popHDMDataset (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function popHDMData_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popHDMData (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function editName_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editName (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function editChannel_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editChannel (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
 
 
 % --- Executes when user attempts to close figure1.
@@ -409,42 +286,4 @@ if isequal(get(hObject, 'waitstatus'), 'waiting')
 else
 % The GUI is no longer waiting, just close it
     delete(hObject);
-end
-
-% --- Executes during object creation, after setting all properties.
-function editFrequency_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editFrequency (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function editLambda_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editLambda (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function popProjectnoise_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popProjectnoise (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
 end

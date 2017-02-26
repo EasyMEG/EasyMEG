@@ -22,7 +22,7 @@ function varargout = SourcePlot(varargin)
 
 % Edit the above text to modify the response to help SourcePlot
 
-% Last Modified by GUIDE v2.5 11-Dec-2016 21:56:20
+% Last Modified by GUIDE v2.5 27-Feb-2017 11:35:58
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -54,9 +54,12 @@ function SourcePlot_OpeningFcn(hObject, eventdata, handles, varargin)
 
 % Choose default command line output for SourcePlot
 handles.output = hObject;
-handles.cfg      = [];
-handles.idx      = [];
-handles.dataName = [];
+handles.cfgSourcePlot = [];
+handles.cfgSourceInt  = [];
+handles.idxDataPlot   = [];
+handles.dataNamePlot  = [];
+handles.idxDataInt    = [];
+handles.dataNameInt   = [];
 
 % Update handles structure
 guidata(hObject, handles);
@@ -68,10 +71,12 @@ for i=1:length(dataSet)
     dataSetList{i} = dataSet{i}.name;
 end
 set(handles.popDataset,'String',dataSetList);
+set(handles.popIntDataset,'String',dataSetList);
 
 data = dataSet{1};
 dataList = fieldnames(data);
 set(handles.popData,'String',dataList);
+set(handles.popIntData,'String',dataList);
 
 % UIWAIT makes SourcePlot wait for user response (see UIRESUME)
 uiwait(handles.figure1);
@@ -85,9 +90,12 @@ function varargout = SourcePlot_OutputFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.cfg;
-varargout{2} = handles.idx;
-varargout{3} = handles.dataName;
+varargout{1} = handles.cfgSourcePlot;
+varargout{2} = handles.cfgSourceInt;
+varargout{3} = handles.idxDataPlot;
+varargout{4} = handles.dataNamePlot;
+varargout{5} = handles.idxDataInt;
+varargout{6} = handles.dataNameInt;
 
 delete(handles.figure1);
 
@@ -106,87 +114,9 @@ idx = get(hObject,'Value');
 data = dataSet{idx};
 
 dataList = fieldnames(data);
-
+set(handles.popData,'Value',1);
 set(handles.popData,'String',dataList);
 
-
-
-% --- Executes during object creation, after setting all properties.
-function popDataset_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popDataset (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function popData_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popData (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function popMethod_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popMethod (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function editFunparameter_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editFunparameter (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function editDownSample_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editDownSample (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function editAtlas_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editAtlas (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
 
 
 % --- Executes on button press in btnAtlas.
@@ -199,46 +129,79 @@ dataDir = fullfile(pathname, filename);
 set(handles.editAtlas,'String',dataDir);
 
 
-% --- Executes during object creation, after setting all properties.
-function popColorbar_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popColorbar (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
 % --- Executes on button press in btnOk.
 function btnOk_Callback(hObject, eventdata, handles)
 % hObject    handle to btnOk (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-cfg = [];
+cfgSourceInt = [];
+method            = {'nearest', 'linear', 'cubic',  'spline', 'sphere_avg' , 'smudge'};
+cfgSourceInt.method        = method{get(handles.popIntMethod,'Value')};
+if ~isempty(get(handles.editIntParameter,'String'))
+    cfgSourceInt.parameter  = eval(get(handles.editIntParameter,'String'));
+end
+
+if ~isempty(get(handles.editIntDownsample,'String'))
+    cfgSourceInt.downsample  = eval(get(handles.editIntDownsample,'String'));
+end
+
+handles.cfgSourceInt      = cfgSourceInt;
+handles.idxDataInt      = get(handles.popIntDataset,'Value');
+dataNameInt         = get(handles.popIntData,'String');
+handles.dataNameInt = dataNameInt{get(handles.popIntData,'Value')};
+
+
+cfgSourcePlot = [];
 
 method            = {'slice','ortho','surface','glassbrain','vertex'};
-cfg.method        = method{get(handles.popMethod,'Value')};
+cfgSourcePlot.method        = method{get(handles.popMethod,'Value')};
 
 if ~isempty(get(handles.editFunparameter,'String'))
-    cfg.funparameter  = eval(get(handles.editFunparameter,'String'));
+    cfgSourcePlot.funparameter  = eval(get(handles.editFunparameter,'String'));
+end
+if ~isempty(get(handles.editAnaparameter,'String'))
+    cfgSourcePlot.anaparameter  = eval(get(handles.editAnaparameter,'String'));
+end
+if ~isempty(get(handles.editMaskparameter,'String'))
+    cfgSourcePlot.maskparameter  = eval(get(handles.editMaskparameter,'String'));
 end
 
 if ~isempty(get(handles.editAtlas,'String'))
-    cfg.atlas         = get(handles.editAtlas,'String');
+    cfgSourcePlot.atlas  = eval(get(handles.editAtlas,'String'));
+end
+
+if ~isempty(get(handles.editDownsample,'String'))
+    cfgSourcePlot.downsample = eval(get(handles.editDownsample,'String'));
+end
+
+if ~isempty(get(handles.editFuncolormap,'String'))
+    cfgSourcePlot.funcolormap = eval(get(handles.editFuncolormap,'String'));
+end
+
+if ~isempty(get(handles.editFuncolorlim,'String'))
+    cfgSourcePlot.funcolorlim = eval(get(handles.editFuncolorlim,'String'));
+end
+
+if ~isempty(get(handles.editOpacitymap,'String'))
+    cfgSourcePlot.opacitymap = eval(get(handles.editOpacitymap,'String'));
+end
+
+if ~isempty(get(handles.editOpacitylim,'String'))
+    cfgSourcePlot.opacitylim = eval(get(handles.editOpacitylim,'String'));
+end
+
+if ~isempty(get(handles.editROI,'String'))
+    cfgSourcePlot.roi = eval(get(handles.editROI,'String'));
 end
 
 colobar            = {'yes','no'};
-cfg.colobar        = colobar{get(handles.popColorbar,'Value')};
+cfgSourcePlot.colobar        = colobar{get(handles.popColorbar,'Value')};
 
-cfg.downsample  = eval(get(handles.editDownSample,'String'));
 
-handles.cfg      = cfg;
-handles.idx      = get(handles.popDataset,'Value');
-dataName         = get(handles.popData,'String');
-handles.dataName = dataName{get(handles.popData,'Value')};
+handles.cfgSourcePlot      = cfgSourcePlot;
+handles.idxDataPlot      = get(handles.popDataset,'Value');
+dataNamePlot         = get(handles.popData,'String');
+handles.dataNamePlot = dataNamePlot{get(handles.popData,'Value')};
 
 guidata(hObject, handles);
 uiresume(handles.figure1);
@@ -266,3 +229,21 @@ else
 % The GUI is no longer waiting, just close it
     delete(hObject);
 end
+
+
+% --- Executes on selection change in popIntDataset.
+function popIntDataset_Callback(hObject, eventdata, handles)
+% hObject    handle to popIntDataset (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popIntDataset contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popIntDataset
+global dataSet;
+
+idx = get(hObject,'Value');
+data = dataSet{idx};
+
+dataList = fieldnames(data);
+set(handles.popIntData,'Value',1);
+set(handles.popIntData,'String',dataList);

@@ -186,26 +186,21 @@ function btnCancel_Callback(hObject, eventdata, handles)
 uiresume(handles.figure1);
 
 
-% --- Executes during object creation, after setting all properties.
-function editSourcemodelPath_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editSourcemodelPath (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
 
 % --- Executes on button press in btnBrowse.
 function btnBrowse_Callback(hObject, eventdata, handles)
 % hObject    handle to btnBrowse (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global EasyMEGPath
+global FieldTripPath
+
+cd(fullfile(FieldTripPath,'template','sourcemodel'));
+
 [filename, pathname]  = uigetfile('*.mat', 'Pick a FieldTrip sourcemodel template (.mat file)');
 dataDir = fullfile(pathname, filename);
+
+cd(EasyMEGPath);
 
 if isequal(filename,0) || isequal(pathname,0)
     disp('Loading canceled...');
@@ -244,44 +239,6 @@ else
 end
 
 
-% --- Executes during object creation, after setting all properties.
-function editResolution_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editResolution (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-% --- Executes during object creation, after setting all properties.
-function editInwardShift_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editInwardShift (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function editMoveInward_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editMoveInward (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
 
 
 % --- Executes when user attempts to close figure1.

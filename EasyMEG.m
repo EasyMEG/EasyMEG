@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 06-Jan-2017 22:04:26
+% Last Modified by GUIDE v2.5 24-Feb-2017 15:46:19
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -72,7 +72,7 @@ currentData = 0;
 
 updateWindow(handles);
 
-% uercfg
+% usercfg
 EasyMEGPath = mfilename('fullpath');
 EasyMEGPath = fileparts(EasyMEGPath);
 cd(EasyMEGPath);
@@ -85,7 +85,7 @@ try
     path(path,FieldTripPath);
     ft_defaults;
 catch
-    FieldTripPath = uigetdir('.','Please set the FieldTrip toolbox directory.');
+    FieldTripPath = SetFieldTrip();
     cfgFilePath = fullfile(EasyMEGPath,'config.ini');
     if FieldTripPath~=0
         key = {'','','FieldTripPath',FieldTripPath};
@@ -1048,14 +1048,14 @@ end
 
 dispWait(handles);
 
-%try
+try
     tfr = ft_freqanalysis(cfg,data);
-% catch ep
-%     ed = errordlg(ep.message,'Error');
-%     waitfor(ed);
-%     updateWindow(handles);
-%     return
-% end
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+    updateWindow(handles);
+    return
+end
 
 dataSet{currentData}.tfr = tfr;
 updateWindow(handles);
@@ -1139,7 +1139,7 @@ if isfield(data,'mri')
     end % switch
 end
 
-[filename, pathname] = uigetfile('*', 'Pick a MRI datafile (.mri file)');
+[filename, pathname] = uigetfile('*', 'Pick a MRI datafile');
 dataDir = fullfile(pathname, filename);
 
 if isequal(filename,0) || isequal(pathname,0)
@@ -1153,7 +1153,7 @@ else
         % for detail: http://www.fieldtriptoolbox.org/faq/my_mri_is_upside_down_is_this_a_problem
     	cfg = [];
         mri = ft_volumereslice(cfg, mri);
-        data.mri = mri;
+        data.mri = ft_convert_units(mri,'mm');
         dataSet{currentData} = data;
     catch ep
         ed = errordlg(ep.message,'Error');
@@ -1185,20 +1185,30 @@ if isfield(data,'headmodel')
     end % switch
 end
 
-[filename, pathname]  = uigetfile('*.mat', 'Pick a FieldTrip Headmodel (.mat file)');
+[filename, pathname]  = uigetfile('*.*', 'Pick a Headmodel file');
 dataDir = fullfile(pathname, filename);
+
+
 
 if isequal(filename,0) || isequal(pathname,0)
     disp('Loading canceled...');
 else
     dispWait(handles);
     
-    load(dataDir);
-    dataName = whos('-file',dataDir);
-    data.headmodel = eval(dataName.name);
+    [~,~,EXT] = fileparts(dataDir);
     
-    data.headmodel = ft_convert_units('mm',data.headmodel);
-    dataSet{currentData} = data;
+    if isequal(EXT,'mat')
+        load(dataDir);
+        dataName = whos('-file',dataDir);
+        data.headmodel = eval(dataName.name);
+
+        data.headmodel = ft_convert_units(data.headmodel,'mm');
+        dataSet{currentData} = data;
+    else
+        data.headmodel = ft_read_vol(dataDir);
+        data.headmodel = ft_convert_units(data.headmodel,'mm');
+        dataSet{currentData} = data;
+    end
         
     updateWindow(handles);
 end
@@ -1237,7 +1247,7 @@ else
     load(dataDir);
     dataName = whos('-file',dataDir);
     data.sourcemodel = eval(dataName.name);
-    data.sourcemodel = ft_convert_units('mm',data.sourcemodel);
+    data.sourcemodel = ft_convert_units(data.sourcemodel,'mm');
     dataSet{currentData} = data;
         
     updateWindow(handles);
@@ -1325,7 +1335,7 @@ switch ButtonName,
            
 end % switch
 
-%data.headmodel = ft_convert_units('mm',headmodel);
+data.headmodel = ft_convert_units(headmodel,'mm');
 data.headmodel = headmodel;
 dataSet{currentData} = data;
 updateWindow(handles);
@@ -1387,6 +1397,9 @@ end
 [useTemplate, cfg0] = SourceModel();
 mri = data.mri;
 
+dispWait(handles);
+
+
 if useTemplate
     templatePath = cfg0.templatePath;
     
@@ -1401,48 +1414,57 @@ if useTemplate
         cfg.grid.nonlinear = 'yes'; % use non-linear normalization
         cfg.mri            = mri;
         cfg.grid.unit      ='mm';
-        data.sourcemodel   = ft_prepare_sourcemodel(cfg);
+        sourcemodel   = ft_prepare_sourcemodel(cfg);
+        data.sourcemodel = ft_convert_units(sourcemodel,'mm');
         
         dataSet{currentData} = data;
     catch ep
         ed = errordlg(ep.message, 'Error');
         waitfor(ed);
+        updateWindow(handles);
     end
 else
-    template = ft_read_mri(fullfile(FieldTripPath, '/external/spm8/templates/T1.nii'));
-    template.coordsys = 'spm';
+    try
+        template = ft_read_mri(fullfile(FieldTripPath, '/external/spm8/templates/T1.nii'));
+        template.coordsys = 'spm';
 
-    % segment the template brain and construct a volume conduction model (i.e. head model): 
-    % this is needed to describe the boundary that define which dipole locations are 'inside' the brain.
-    cfg          = [];
-    template_seg = ft_volumesegment(cfg, template);
+        % segment the template brain and construct a volume conduction model (i.e. head model): 
+        % this is needed to describe the boundary that define which dipole locations are 'inside' the brain.
+        cfg          = [];
+        template_seg = ft_volumesegment(cfg, template);
 
-    cfg          = [];
-    cfg.method   = 'singleshell';
-    template_headmodel = ft_prepare_headmodel(cfg, template_seg);
-    template_headmodel = ft_convert_units(template_headmodel, 'cm'); % Convert the vol to cm, because the CTF convenction is to express everything in cm.
+        cfg          = [];
+        cfg.method   = 'singleshell';
+        template_headmodel = ft_prepare_headmodel(cfg, template_seg);
+        template_headmodel = ft_convert_units(template_headmodel, 'cm'); % Convert the vol to cm, because the CTF convenction is to express everything in cm.
 
-    % construct the dipole grid in the template brain coordinates
-    % the negative inwardshift means an outward shift of the brain surface for inside/outside detection
-    cfg = [];
-    cfg.grid.resolution = cfg0.resolution;
-    cfg.grid.tight  = 'yes';
-    cfg.inwardshift = cfg0.inwardshift;
-    cfg.moveinward  = cfg0.moveinward;
-    cfg.headmodel   = template_headmodel;
-    template_grid   = ft_prepare_sourcemodel(cfg);
-   
+        % construct the dipole grid in the template brain coordinates
+        % the negative inwardshift means an outward shift of the brain surface for inside/outside detection
+        cfg = [];
+        cfg.grid.resolution = cfg0.resolution;
+        cfg.grid.tight  = 'yes';
+        cfg.inwardshift = cfg0.inwardshift;
+        cfg.moveinward  = cfg0.moveinward;
+        cfg.headmodel   = template_headmodel;
+        template_grid   = ft_prepare_sourcemodel(cfg);
 
-    cfg                = [];
-    cfg.grid.warpmni   = 'yes';
-    cfg.grid.template  = template_grid;
-    cfg.grid.nonlinear = 'yes'; % use non-linear normalization
-    cfg.mri            = mri;
-    cfg.grid.unit      ='mm';
-    data.sourcemodel   = ft_prepare_sourcemodel(cfg);
-    
-    dataSet{currentData} = data;
+
+        cfg                = [];
+        cfg.grid.warpmni   = 'yes';
+        cfg.grid.template  = template_grid;
+        cfg.grid.nonlinear = 'yes'; % use non-linear normalization
+        cfg.mri            = mri;
+        cfg.grid.unit      ='mm';
+        sourcemodel   = ft_prepare_sourcemodel(cfg);
+        data.sourcemodel = ft_convert_units(sourcemodel,'mm');
+        dataSet{currentData} = data;
+    catch ep
+        ed = errordlg(ep.message, 'Error');
+        waitfor(ed);
+        updateWindow(handles);
+    end
 end
+updateWindow(handles);
 
 
 
@@ -1457,13 +1479,6 @@ function menuFilters_Callback(hObject, eventdata, handles)
 % --------------------------------------------------------------------
 function menuImportEvent_Callback(hObject, eventdata, handles)
 % hObject    handle to menuImportEvent (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --------------------------------------------------------------------
-function menuCTFEvent_Callback(hObject, eventdata, handles)
-% hObject    handle to menuCTFEvent (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global dataSet;
@@ -1483,7 +1498,7 @@ if isfield(data,'event')
     end % switch
 end
 
-dataDir = uigetdir('.','Pick a CTF dataset (.ds floder)');
+dataDir = uigetdir('.','Pick a dataset');
 
 if ~dataDir
     disp('Loading canceled...');
@@ -1502,6 +1517,7 @@ else
 end
 
 
+
 % --------------------------------------------------------------------
 function menuViewHeadmodel_Callback(hObject, eventdata, handles)
 % hObject    handle to menuViewHeadmodel (see GCBO)
@@ -1516,25 +1532,19 @@ if ~isfield(data,'headmodel')
     waitfor(ed);
     return
 end
-    
-dataDir = uigetdir('.','Import sensors, please select the original data floder.');
+     
+try
+    sens = data.data.grad;
+    sens = ft_convert_units(sens,'mm');
 
-if ~dataDir
-    disp('Loading canceled...');
-else    
-    try
-        sens = ft_read_sens(dataDir);
-        sens = ft_convert_units(sens,'mm');
+    figure
+    ft_plot_sens(sens, 'style', 'r*');
 
-        figure
-        ft_plot_sens(sens, 'style', 'r*');
-
-        hold on
-        ft_plot_vol(data.headmodel);
-    catch ep
-        ed = errordlg(ep.message,'Error');
-        waitfor(ed);
-    end
+    hold on
+    ft_plot_vol(data.headmodel);
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
 end
 
 
@@ -1798,13 +1808,13 @@ for i = 2:length(dataPlot)
 end
 
 
-try
+%try
     figure;
     eval(['ft_multiplotER(cfg,',strDataPlot,');']);
-catch ep
-    ed = errordlg(ep.message,'Error');
-    waitfor(ed);
-end
+% catch ep
+%     ed = errordlg(ep.message,'Error');
+%     waitfor(ed);
+% end
 
 updateWindow(handles);
 
@@ -1873,13 +1883,13 @@ disp(dataName)
 disp(['dataSet{idx}.',dataName]);
 data = eval(['dataSet{idx}.',dataName]);
 
-try
+%try
     figure;
     ft_topoplotER(cfg,data);
-catch ep
-    ed = errordlg(ep.message,'Error');
-    waitfor(ed);
-end
+% catch ep
+%     ed = errordlg(ep.message,'Error');
+%     waitfor(ed);
+% end
 
 updateWindow(handles);
 
@@ -2010,22 +2020,24 @@ function menuSourcePlot_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global dataSet;
 
-[cfg,idx,dataName] = SourcePlot();
-if isempty(idx)
-    if isempty(cfg)&&isempty(idx)&&isempty(dataName)
+[cfgSourcePlot,cfgSourceInt,idxDataPlot,dataNamePlot,idxDataInt,dataNameInt] = SourcePlot();
+if isempty(idxDataPlot)
+    if isempty(cfgSourcePlot)&&isempty(idxDataPlot)&&isempty(dataNamePlot)
         return
     end
     ed = warndlg('No data in Plot List, ploting cancel.','Error');
     waitfor(ed);
     return
 end
-disp(dataName)
-disp(['dataSet{idx}.',dataName]);
-data = eval(['dataSet{idx}.',dataName]);
+
+data = eval(['dataSet{idxDataPlot}.',dataNamePlot]);
+anatomy = eval(['dataSet{idxDataInt}.',dataNameInt]);
+
+dispWait(handles);
 
 try
-    figure;
-    ft_sourceplot(cfg,data);
+    dataInt = ft_sourceinterpolate(cfgSourceInt,data,anatomy);
+    ft_sourceplot(cfgSourcePlot,dataInt);
 catch ep
     ed = errordlg(ep.message,'Error');
     waitfor(ed);
@@ -2140,8 +2152,8 @@ try
     data.sourceDiff = sourceDiff;
     data.sourceDiffInt = sourceDiffInt;
     
-    dataSet{size(dataSet,1)+1} = data;
-    currentData = size(dataSet,1);
+    dataSet{size(dataSet,2)+1} = data;
+    currentData = size(dataSet,2);
     
 catch ep
     ed = errordlg(ep.message,'Error');
@@ -2190,11 +2202,12 @@ function menuSourceAnalysis_Callback(hObject, eventdata, handles)
 global dataSet;
 global currentData;
 
-[cfg,conA,conB,whole,mri] = SourceAnalysis();
+[cfg,conA,conB,whole,mri,data] = SourceAnalysis();
+assignin('base','cfg',cfg);
 
-if isempty(cfg)||isempty(conA)||isempty(conB)||isempty(mri)||isempty(whole)
+if isempty(cfg)||isempty(conA)||isempty(conB)||isempty(mri)||isempty(whole)||isempty(data)
 
-    if isempty(cfg)&&isempty(conA)&&isempty(conB)&&isempty(mri)||isempty(whole)
+    if isempty(cfg)&&isempty(conA)&&isempty(conB)&&isempty(mri)||isempty(whole)||isempty(data)
         return
     end
     
@@ -2206,7 +2219,7 @@ end
 
 dispWait(handles);
 
-try
+%try
     % Source Analysis: Contrast conA & conB
 
     sourceAll = ft_sourceanalysis(cfg, whole);
@@ -2216,24 +2229,7 @@ try
     sourceB  = ft_sourceanalysis(cfg, conB);
     
     sourceDiff = sourceB;
-    sourceDiff.avg.pow = (sourceB.avg.pow - sourcA.avg.pow) ./ sourceA.avg.pow;
-    
-    mri = ft_volumereslice([], mri);
-    cfg            = [];
-    cfg.downsample = 2;
-    cfg.parameter  = 'avg.pow';
-    sourceDiffInt  = ft_sourceinterpolate(cfg, sourceDiff , mri);
-    
-    cfg = [];
-    cfg.method        = 'slice';
-    cfg.funparameter  = 'avg.pow';
-    cfg.maskparameter = cfg.funparameter;
-    cfg.funcolorlim   = [0.0 1.2];
-    cfg.opacitylim    = [0.0 1.2]; 
-    cfg.opacitymap    = 'rampup'; 
-    figure;
-    ft_sourceplot(cfg, sourceDiffInt);
-    
+    sourceDiff.avg.pow = (sourceB.avg.pow - sourceA.avg.pow) ./ sourceA.avg.pow;
     
     prompt={'Please input a dataset name for the results:'};
     name='Input dataset name';
@@ -2242,26 +2238,25 @@ try
  
     answer=inputdlg(prompt,name,numlines,defaultanswer);
     
-    
+    newdata = [];
 
-    data.name = answer;
-
-    data.conA = conA;
-    data.conB = conB;
-    data.wholedata = whole;
-    data.sourceA = sourceA;
-    data.sourceB = sourceB;
-    data.sourceDiff = sourceDiff;
-    data.sourceDiffInt = sourceDiffInt;
-    data.sourceFilter  = sourceAll.avg.filter;
+    newdata.name = answer{1};
+    newdata.data = data;
+    newdata.conA = conA;
+    newdata.conB = conB;
+    newdata.whole = whole;
+    newdata.sourceA = sourceA;
+    newdata.sourceB = sourceB;
+    newdata.sourceDiff = sourceDiff;
+    newdata.sourceFilter  = sourceAll.avg.filter;
     
-    dataSet{size(dataSet,1)+1} = data;
-    currentData = size(dataSet,1);
+    dataSet{size(dataSet,2)+1} = newdata;
+    currentData = size(dataSet,2);
     
-catch ep
-    ed = errordlg(ep.message,'Error');
-    waitfor(ed);
-end
+% catch ep
+%     ed = errordlg(ep.message,'Error');
+%     waitfor(ed);
+% end
 
 updateWindow(handles);
 
@@ -2315,7 +2310,7 @@ function menuSourceAnalysis_Single_Callback(hObject, eventdata, handles)
 global dataSet;
 global currentData;
 
-[cfg,data,name,mri,flagNAI] = SourceAnalysis_Single();
+[cfg,data,mri,flagNAI,dataOrignal] = SourceAnalysis_Single();
 
 if isempty(cfg)||isempty(mri)||isempty(data)
 
@@ -2332,8 +2327,9 @@ end
 dispWait(handles);
 
 try
-    % Source Analysis: Contrast conA & conB
-
+    % Source Analysis
+    cfg.senstype     = 'MEG';
+    
     source = ft_sourceanalysis(cfg, data);
     
     newdata = [];
@@ -2343,55 +2339,83 @@ try
     	sourceNAI = source;
         sourceNAI.avg.pow = source.avg.pow ./ source.avg.noise;
         
-        mri = ft_volumereslice([], mri);
-        cfg = [];
-        cfg.downsample = 2;
-        cfg.parameter = 'avg.pow';
-        sourceNAIInt = ft_sourceinterpolate(cfg, sourceNAI , mri);
-        
-        cfg = [];
-        cfg.method        = 'slice';
-        cfg.funparameter  = 'avg.pow';
-        cfg.maskparameter = cfg.funparameter;
-        cfg.funcolorlim   = [0.0 1.2];
-        cfg.opacitylim    = [0.0 1.2]; 
-        cfg.opacitymap    = 'rampup'; 
-        figure;
-        ft_sourceplot(cfg, sourceNAIInt);
-        
         newdata.sourceNAI = sourceNAI;
-        newdata.sourceNAIInt = sourceNAIInt;
         newdata.sourceFilter = sourceNAI.avg.filter;
     else
-        mri = ft_volumereslice([], mri);
-        cfg            = [];
-        cfg.downsample = 2;
-        cfg.parameter  = 'avg.pow';
-        sourceInt  = ft_sourceinterpolate(cfg, source , mri);
-
-        cfg = [];
-        cfg.method        = 'slice';
-        cfg.funparameter  = 'avg.pow';
-        cfg.maskparameter = cfg.funparameter;
-        cfg.funcolorlim   = [0.0 1.2];
-        cfg.opacitylim    = [0.0 1.2]; 
-        cfg.opacitymap    = 'rampup'; 
-        figure;
-        ft_sourceplot(cfg, sourceInt);
-        
-        newdata.source = sourceNAI;
-        newdata.sourceInt = sourceNAIInt;
+        newdata.source = source;
         newdata.sourceFilter = source.avg.filter;
     end
 
-    newdata.name = name;
+    prompt={'Please input a dataset name for the results:'};
+    name='Input dataset name';
+    numlines=1;
+    defaultanswer={'Source'};
+ 
+    answer=inputdlg(prompt,name,numlines,defaultanswer);
+    newdata.name = answer{1};
+    newdata.data = dataOrignal;
 
-    dataSet{size(dataSet,1)+1} = newdata;
-    currentData = size(dataSet,1);
+    dataSet{size(dataSet,2)+1} = newdata;
+    currentData = size(dataSet,2);
     
 catch ep
     ed = errordlg(ep.message,'Error');
     waitfor(ed);
+end
+
+updateWindow(handles);
+
+
+% --------------------------------------------------------------------
+function menuSplitTrials_Callback(hObject, eventdata, handles)
+% hObject    handle to menuSplitTrials (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+
+data = dataSet{currentData}.data;
+
+[cfg,name] = SplitTrial();
+
+dispWait(handles);
+
+try
+    newData = [];
+    newData.data = ft_redefinetrial(cfg, data);
+    newData.name = name;
+
+    dataSet{size(dataSet,2)+1} = newData;
+    currentData = size(dataSet,2);    
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
+
+updateWindow(handles);
+
+
+
+% --------------------------------------------------------------------
+function menuSelectData_Callback(hObject, eventdata, handles)
+% hObject    handle to menuSelectData (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+global currentData;
+
+data = dataSet{currentData}.data;
+
+cfg = SelectData();
+
+dispWait(handles);
+
+try
+    data = ft_redefinetrial(cfg,data);
+    dataSet{currentData}.data = data;
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed); 
 end
 
 updateWindow(handles);

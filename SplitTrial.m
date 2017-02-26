@@ -1,35 +1,35 @@
-function varargout = getAlim(varargin)
-% GETALIM MATLAB code for getAlim.fig
-%      GETALIM, by itself, creates a new GETALIM or raises the existing
+function varargout = SplitTrial(varargin)
+% SPLITTRIAL MATLAB code for SplitTrial.fig
+%      SPLITTRIAL, by itself, creates a new SPLITTRIAL or raises the existing
 %      singleton*.
 %
-%      H = GETALIM returns the handle to a new GETALIM or the handle to
+%      H = SPLITTRIAL returns the handle to a new SPLITTRIAL or the handle to
 %      the existing singleton*.
 %
-%      GETALIM('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in GETALIM.M with the given input arguments.
+%      SPLITTRIAL('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in SPLITTRIAL.M with the given input arguments.
 %
-%      GETALIM('Property','Value',...) creates a new GETALIM or raises the
+%      SPLITTRIAL('Property','Value',...) creates a new SPLITTRIAL or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before getAlim_OpeningFcn gets called.  An
+%      applied to the GUI before SplitTrial_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to getAlim_OpeningFcn via varargin.
+%      stop.  All inputs are passed to SplitTrial_OpeningFcn via varargin.
 %
 %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
 %      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help getAlim
+% Edit the above text to modify the response to help SplitTrial
 
-% Last Modified by GUIDE v2.5 25-Aug-2016 20:21:25
+% Last Modified by GUIDE v2.5 24-Feb-2017 10:36:38
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @getAlim_OpeningFcn, ...
-                   'gui_OutputFcn',  @getAlim_OutputFcn, ...
+                   'gui_OpeningFcn', @SplitTrial_OpeningFcn, ...
+                   'gui_OutputFcn',  @SplitTrial_OutputFcn, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -44,54 +44,67 @@ end
 % End initialization code - DO NOT EDIT
 
 
-% --- Executes just before getAlim is made visible.
-function getAlim_OpeningFcn(hObject, eventdata, handles, varargin)
+% --- Executes just before SplitTrial is made visible.
+function SplitTrial_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to getAlim (see VARARGIN)
+% varargin   command line arguments to SplitTrial (see VARARGIN)
 
-% Choose default command line output for getAlim
+% Choose default command line output for SplitTrial
 handles.output = hObject;
-handles.isOk = 0;
+handles.cfg = [];
+handles.name = [];
 
 % Update handles structure
 guidata(hObject, handles);
 
-% UIWAIT makes getAlim wait for user response (see UIRESUME)
+% UIWAIT makes SplitTrial wait for user response (see UIRESUME)
 uiwait(handles.figure1);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = getAlim_OutputFcn(hObject, eventdata, handles) 
+function varargout = SplitTrial_OutputFcn(hObject, eventdata, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.isOk;
-
-varargout{2} = str2double((get(handles.editBase,'String')));
-varargout{3} = str2double((get(handles.editMEG,'String')));
-varargout{4} = str2double((get(handles.editEEG,'String')));
-varargout{5} = str2double((get(handles.editECG,'String')));
-varargout{6} = str2double((get(handles.editEOG,'String')));
-varargout{7} = str2double((get(handles.editEMG,'String')));
+varargout{1} = handles.cfg;
+varargout{2} = handles.name;
 
 delete(handles.figure1);
-
 
 % --- Executes on button press in btnOk.
 function btnOk_Callback(hObject, eventdata, handles)
 % hObject    handle to btnOk (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.isOk = 1;
+timeRange = get(handles.editTimeRange,'String');
+name = get(handles.editName,'String');
+
+if isempty(timeRange)||isempty(name)
+    wd = warndlg('The input cannot be blank.','Warning');
+    waitfor(wd);
+    return
+end
+
+try
+    cfg = [];
+    cfg.toilim = eval(timeRange);
+catch ep
+    ed = errordlg(ep,message,'Error');
+    waitfor(ed);
+    return
+end
+
+handles.cfg = cfg;
+handles.name = name;
+
 guidata(hObject, handles);
 uiresume(handles.figure1);
-
 
 % --- Executes on button press in btnCancel.
 function btnCancel_Callback(hObject, eventdata, handles)
@@ -99,6 +112,7 @@ function btnCancel_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 uiresume(handles.figure1);
+
 
 
 % --- Executes when user attempts to close figure1.

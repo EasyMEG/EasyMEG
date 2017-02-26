@@ -76,139 +76,6 @@ varargout{1} = handles.cfg;
 delete(handles.figure1);
 
 
-% --- Executes on selection change in popOutput.
-function popOutput_Callback(hObject, eventdata, handles)
-% hObject    handle to popOutput (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns popOutput contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popOutput
-if get(hObject,'Value')==2
-    set(handles.editChannelPairs,'Enable','On');
-else
-    set(handles.editChannelPairs,'Enable','Off');
-end
-
-
-
-% --- Executes during object creation, after setting all properties.
-function popOutput_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popOutput (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function editChannel_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editChannel (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function editChannelPairs_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editChannelPairs (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function editTrials_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editTrials (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function popKeepTrials_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popKeepTrials (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function popKeepTapers_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popKeepTapers (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function editPad_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editPad (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-% --- Executes during object creation, after setting all properties.
-function popPadType_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popPadType (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function editPolyremoval_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editPolyremoval (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
 
 % --- Executes on button press in rbtnFoiBand.
 function rbtnFoiBand_Callback(hObject, eventdata, handles)
@@ -229,19 +96,6 @@ end
 
 
 
-% --- Executes during object creation, after setting all properties.
-function editFoiBand_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editFoiBand (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
 % --- Executes on button press in rbtnFoi.
 function rbtnFoi_Callback(hObject, eventdata, handles)
 % hObject    handle to rbtnFoi (see GCBO)
@@ -257,20 +111,6 @@ else
     set(handles.rbtnFoiBand,'Value',1);
     set(handles.editFoi,'Enable','Off');
     set(handles.editFoiBand,'Enable','On');
-end
-
-
-
-% --- Executes during object creation, after setting all properties.
-function editTapSmoFrq_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editTapSmoFrq (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
 end
 
 
@@ -290,10 +130,6 @@ cfg = [];
 outout          = {'pow','powandcsd','fourier'};
 cfg.output      = outout{get(handles.popOutput,'Value')};
 cfg.channel     = eval(get(handles.editChannel,'String'));
-
-if get(handles.popOutput,'Value')==2
-    cfg.channelcmb  = eval(get(handles.editChannelPairs,'String'));
-end
 
 cfg.trials      = eval(get(handles.editTrials,'String'));
 keeptrials      = {'no','yes'};
@@ -346,84 +182,3 @@ else
     delete(hObject);
 end
 
-
-% --- Executes during object creation, after setting all properties.
-function editFoi_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editFoi (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function editToi_Callback(hObject, eventdata, handles)
-% hObject    handle to editToi (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of editToi as text
-%        str2double(get(hObject,'String')) returns contents of editToi as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function editToi_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editToi (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function editWidth_Callback(hObject, eventdata, handles)
-% hObject    handle to editWidth (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of editWidth as text
-%        str2double(get(hObject,'String')) returns contents of editWidth as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function editWidth_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editWidth (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function editGWidth_Callback(hObject, eventdata, handles)
-% hObject    handle to editGWidth (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of editGWidth as text
-%        str2double(get(hObject,'String')) returns contents of editGWidth as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function editGWidth_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editGWidth (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end

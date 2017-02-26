@@ -22,7 +22,7 @@ function varargout = SourceAnalysis_Single(varargin)
 
 % Edit the above text to modify the response to help SourceAnalysis_Single
 
-% Last Modified by GUIDE v2.5 06-Jan-2017 21:57:59
+% Last Modified by GUIDE v2.5 23-Feb-2017 10:38:55
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -56,9 +56,9 @@ function SourceAnalysis_Single_OpeningFcn(hObject, eventdata, handles, varargin)
 handles.output = hObject;
 handles.cfg    = [];
 handles.data   = [];
-handles.name   = [];
 handles.mri    = [];
 handles.flagNAI= [];
+handles.dataOrignal=[];
 
 % Update handles structure
 guidata(hObject, handles);
@@ -99,9 +99,9 @@ function varargout = SourceAnalysis_Single_OutputFcn(hObject, eventdata, handles
 % Get default command line output from handles structure
 varargout{1} = handles.cfg;
 varargout{2} = handles.data;
-varargout{3} = handles.name;
-varargout{4} = handles.mri;
-varargout{5} = handles.flagNAI;
+varargout{3} = handles.mri;
+varargout{4} = handles.flagNAI;
+varargout{5} = handles.dataOrignal;
 
 delete(handles.figure1);
 
@@ -121,7 +121,7 @@ idx = get(hObject,'Value');
 data = dataSet{idx};
 
 dataList = fieldnames(data);
-
+set(handles.popSourcemodelData,'Value',1);
 set(handles.popSourcemodelData,'String',dataList);
 
 % --- Executes on selection change in popMriDataset.
@@ -138,7 +138,7 @@ idx = get(hObject,'Value');
 data = dataSet{idx};
 
 dataList = fieldnames(data);
-
+set(handles.popMriData,'Value',1);
 set(handles.popMriData,'String',dataList);
 
 % --- Executes on selection change in popHeadmodelDataset.
@@ -155,7 +155,7 @@ idx = get(hObject,'Value');
 data = dataSet{idx};
 
 dataList = fieldnames(data);
-
+set(handles.popHeadmodelData,'Value',1);
 set(handles.popHeadmodelData,'String',dataList);
 
 % --- Executes on selection change in popLeadfieldDataset.
@@ -172,7 +172,7 @@ idx = get(hObject,'Value');
 data = dataSet{idx};
 
 dataList = fieldnames(data);
-
+set(handles.popLeadfieldData,'Value',1);
 set(handles.popLeadfieldData,'String',dataList);
 
 % --- Executes on button press in btnOK.
@@ -208,14 +208,17 @@ end
 
 
 idx   = get(handles.popDataset,'Value');
+dataOrignal = eval('dataSet{idx}.data');
 data  = get(handles.popData,'String');
 data  = data{get(handles.popData,'Value')};
-data  = eval(['dataSet{idx}.',Data]);
+data  = eval(['dataSet{idx}.',data]);
 
-method = {'lcmv','sam','dics','pcc','mne','rv','music','sloreta','eloreta'};
+method = {'lcmv','sam','dics','mne'};
 cfg.method = method{get(handles.popMethod,'Value')}; 
 cfg.channel      = eval(get(handles.editChannel,'String'));
-cfg.frequency    = eval(get(handles.editFrequency,'String'));
+if ~isempty(get(handles.editFrequency,'String'))
+    cfg.frequency    = eval(get(handles.editFrequency,'String'));
+end
 
 jackknife = {'no','yes'};
 cfg.jackknife = jackknife{get(handles.popJackKnife,'Value')};
@@ -235,7 +238,7 @@ cfg.permutation = permutation{get(handles.popPermutation,'Value')};
 randomization = {'no','yes'};
 cfg.randomization = randomization{get(handles.popRandomization,'Value')};
 
-cfg.numrandomization = eval(get(handles.editNumrandomization,'String'));
+cfg.numrandomization = eval(get(handles.editNumpermutation,'String'));
 
 pseudovalue = {'no','yes'};
 cfg.pseudovalue = pseudovalue{get(handles.popPseudovalue,'Value')};
@@ -252,7 +255,7 @@ if ~isempty(get(handles.editLatency,'String'))
 end
 
 if ~isempty(get(handles.editLambda,'String'))
-    cfg.lambda = eval(get(handles.editlambda,'String'));
+    cfg.lambda = eval(get(handles.editLambda,'String'));
 end
 
 if ~isempty(get(handles.editRefchan,'String'))
@@ -277,23 +280,21 @@ cfg.keeptrial = keeptrial{get(handles.popKeepTrial,'Value')};
 keepleadfield = {'no','yes'};
 cfg.keepleadfield = keepleadfield{get(handles.popKeepLeadfield,'Value')};
 
-projectnoise = {'no','yes'};
-cfg.projectnoise = projectnoise{get(handles.popProjectnoise,'Value')};
+cfg.projectnoise = 'yes';
 
-keepfilter = {'no','yes'};
-cfg.keepfilter = keepfilter{get(handles.popKeepFilter,'Value')};
+cfg.keepfilter = 'yes';
 
 keepcsd = {'no','yes'};
 cfg.keepcsd = keepcsd{get(handles.popKeepCSD,'Value')};
 
-keepmom = {'no','yes'};
-cfg.keepmom = keepmom{get(handles.popKeepMom,'Value')};
+cfg.keepmom = 'no';
 
 handles.flagNAI = get(handles.checkboxNAI,'Value');
 
 handles.cfg   = cfg;
 handles.data  = data;
 handles.mri   = mri;
+handles.dataOrignal = dataOrignal;
 
 guidata(hObject, handles);
 uiresume(handles.figure1);
@@ -351,15 +352,5 @@ idx = get(hObject,'Value');
 data = dataSet{idx};
 
 dataList = fieldnames(data);
-
+set(handles.popData,'Value',1);
 set(handles.popData,'String',dataList);
-
-
-
-% --- Executes on button press in checkboxNAI.
-function checkboxNAI_Callback(hObject, eventdata, handles)
-% hObject    handle to checkboxNAI (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of checkboxNAI

@@ -22,7 +22,7 @@ function varargout = VisualInspect(varargin)
 
 % Edit the above text to modify the response to help VisualInspect
 
-% Last Modified by GUIDE v2.5 28-Aug-2016 09:42:06
+% Last Modified by GUIDE v2.5 27-Feb-2017 22:00:46
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -73,124 +73,6 @@ function varargout = VisualInspect_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.cfg;
 delete(handles.figure1);
 
-
-% --- Executes during object creation, after setting all properties.
-function editPassBand_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editPassBand (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-% --- Executes during object creation, after setting all properties.
-function editStopBand_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editStopBand (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-% --- Executes during object creation, after setting all properties.
-function editEegScaling_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editEegScaling (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-% --- Executes during object creation, after setting all properties.
-function editEogScaling_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editEogScaling (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function editEcgScaling_Callback(hObject, eventdata, handles)
-% hObject    handle to editEcgScaling (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of editEcgScaling as text
-%        str2double(get(hObject,'String')) returns contents of editEcgScaling as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function editEcgScaling_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editEcgScaling (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-% --- Executes during object creation, after setting all properties.
-function editEmgScaling_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editEmgScaling (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-% --- Executes during object creation, after setting all properties.
-function editMegScaling_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editMegScaling (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function popRender_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popRender (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
 
 
 % --- Executes on button press in rbtnContinuousYes.
@@ -270,32 +152,6 @@ if get(hObject,'Value')
     set(handles.rbtnViewModeVertical,'Value',0);
 else
     set(handles.rbtnViewModeVertical,'Value',1);
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function editVerticalScaling_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editVerticalScaling (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function editBlockSize_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editBlockSize (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
 end
 
 
@@ -434,3 +290,4 @@ else
 % The GUI is no longer waiting, just close it
     delete(hObject);
 end
+

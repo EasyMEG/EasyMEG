@@ -59,6 +59,7 @@ handles.conA   = [];
 handles.conB   = [];
 handles.whole  = [];
 handles.mri    = [];
+handles.data   = [];
 
 % Update handles structure
 guidata(hObject, handles);
@@ -106,6 +107,7 @@ varargout{2} = handles.conA;
 varargout{3} = handles.conB;
 varargout{4} = handles.whole;
 varargout{5} = handles.mri;
+varargout{6} = handles.data;
 
 delete(handles.figure1);
 
@@ -125,7 +127,7 @@ idx = get(hObject,'Value');
 data = dataSet{idx};
 
 dataList = fieldnames(data);
-
+set(handles.popSourcemodelData,'Value',1);
 set(handles.popSourcemodelData,'String',dataList);
 
 % --- Executes on selection change in popMriDataset.
@@ -142,7 +144,7 @@ idx = get(hObject,'Value');
 data = dataSet{idx};
 
 dataList = fieldnames(data);
-
+set(handles.popMriData,'Value',1);
 set(handles.popMriData,'String',dataList);
 
 % --- Executes on selection change in popHeadmodelDataset.
@@ -159,7 +161,7 @@ idx = get(hObject,'Value');
 data = dataSet{idx};
 
 dataList = fieldnames(data);
-
+set(handles.popHeadmodelData,'Value',1);
 set(handles.popHeadmodelData,'String',dataList);
 
 % --- Executes on selection change in popLeadfieldDataset.
@@ -176,7 +178,7 @@ idx = get(hObject,'Value');
 data = dataSet{idx};
 
 dataList = fieldnames(data);
-
+set(handles.popLeadfieldData,'Value',1);
 set(handles.popLeadfieldData,'String',dataList);
 
 % --- Executes on button press in btnOK.
@@ -207,7 +209,7 @@ if get(handles.checkboxLeadfield,'Value')
     LeadfieldDataset = get(handles.popLeadfieldDataset,'Value');
     LeadfieldData    = get(handles.popLeadfieldData,'String');
     LeadfieldData    = LeadfieldData{get(handles.popLeadfieldData,'Value')};
-    cfg.grid.leadfield = eval(['dataSet{LeadfieldDataset}.',LeadfieldData]);
+    cfg.grid = eval(['dataSet{LeadfieldDataset}.',LeadfieldData]);
 end
 
 conADataset = get(handles.popConADataset,'Value');
@@ -224,11 +226,15 @@ wholeDataset = get(handles.popWholeDataset,'Value');
 wholeData    = get(handles.popWholeData,'String');
 wholeData    = wholeData{get(handles.popWholeData,'Value')};
 whole = eval(['dataSet{wholeDataset}.',wholeData]);
+data = eval('dataSet{wholeDataset}.data');
 
-method = {'lcmv','sam','dics','pcc','mne','rv','music','sloreta','eloreta'};
+method = {'lcmv','sam','dics','mne'};
 cfg.method = method{get(handles.popMethod,'Value')}; 
 cfg.channel      = eval(get(handles.editChannel,'String'));
-cfg.frequency    = eval(get(handles.editFrequency,'String'));
+
+if ~isempty(get(handles.editFrequency,'String'))
+    cfg.frequency    = eval(get(handles.editFrequency,'String'));
+end
 
 jackknife = {'no','yes'};
 cfg.jackknife = jackknife{get(handles.popJackKnife,'Value')};
@@ -265,7 +271,7 @@ if ~isempty(get(handles.editLatency,'String'))
 end
 
 if ~isempty(get(handles.editLambda,'String'))
-    cfg.lambda = eval(get(handles.editlambda,'String'));
+    cfg.lambda = eval(get(handles.editLambda,'String'));
 end
 
 if ~isempty(get(handles.editRefchan,'String'))
@@ -291,16 +297,14 @@ keepleadfield = {'no','yes'};
 cfg.keepleadfield = keepleadfield{get(handles.popKeepLeadfield,'Value')};
 
 projectnoise = {'no','yes'};
-cfg.projectnoise = projectnoise{get(handles.popProjectnoise,'Value')};
+cfg.projectnoise = projectnoise{get(handles.popProjectNoise,'Value')};
 
-keepfilter = {'no','yes'};
-cfg.keepfilter = keepfilter{get(handles.popKeepFilter,'Value')};
+cfg.keepfilter = 'yes';
 
 keepcsd = {'no','yes'};
 cfg.keepcsd = keepcsd{get(handles.popKeepCSD,'Value')};
 
-keepmom = {'no','yes'};
-cfg.keepmom = keepmom{get(handles.popKeepMom,'Value')};
+cfg.keepmom = 'yes';
 
 
 handles.cfg   = cfg;
@@ -308,6 +312,7 @@ handles.conA  = conA;
 handles.conB  = conB;
 handles.whole = whole;
 handles.mri   = mri;
+handles.data  = data;
 
 guidata(hObject, handles);
 uiresume(handles.figure1);
@@ -365,7 +370,7 @@ idx = get(hObject,'Value');
 data = dataSet{idx};
 
 dataList = fieldnames(data);
-
+set(handles.popConAData,'Value',1);
 set(handles.popConAData,'String',dataList);
 
 
@@ -385,7 +390,7 @@ idx = get(hObject,'Value');
 data = dataSet{idx};
 
 dataList = fieldnames(data);
-
+set(handles.popConBData,'Value',1);
 set(handles.popConBData,'String',dataList);
 
 
@@ -403,5 +408,5 @@ idx = get(hObject,'Value');
 data = dataSet{idx};
 
 dataList = fieldnames(data);
-
+set(handles.popWholeData,'Value',1);
 set(handles.popWholeData,'String',dataList);

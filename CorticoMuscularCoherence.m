@@ -110,51 +110,6 @@ uiresume(handles.figure1);
 
 
 
-function editChannel_Callback(hObject, eventdata, handles)
-% hObject    handle to editChannel (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of editChannel as text
-%        str2double(get(hObject,'String')) returns contents of editChannel as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function editChannel_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editChannel (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function editChannelPairs_Callback(hObject, eventdata, handles)
-% hObject    handle to editChannelPairs (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of editChannelPairs as text
-%        str2double(get(hObject,'String')) returns contents of editChannelPairs as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function editChannelPairs_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editChannelPairs (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
 % --- Executes on button press in rbtnKeepTrailsYes.
 function rbtnKeepTrailsYes_Callback(hObject, eventdata, handles)
 % hObject    handle to rbtnKeepTrailsYes (see GCBO)
@@ -180,51 +135,6 @@ if get(hObject,'Value')
     set(handles.rbtnKeepTrailsYes,'Value',0);
 else
     set(handles.rbtnKeepTrailsYes,'Value',1);
-end
-
-
-function editSpectralSmoothing_Callback(hObject, eventdata, handles)
-% hObject    handle to editSpectralSmoothing (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of editSpectralSmoothing as text
-%        str2double(get(hObject,'String')) returns contents of editSpectralSmoothing as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function editSpectralSmoothing_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editSpectralSmoothing (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function editFOI_Callback(hObject, eventdata, handles)
-% hObject    handle to editFOI (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of editFOI as text
-%        str2double(get(hObject,'String')) returns contents of editFOI as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function editFOI_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editFOI (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
 end
 
 

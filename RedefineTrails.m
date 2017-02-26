@@ -107,96 +107,6 @@ varargout{1} = handles.cfg;
 delete(handles.figure1);
 
 
-function editEventType_Callback(hObject, eventdata, handles)
-% hObject    handle to editEventType (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of editEventType as text
-%        str2double(get(hObject,'String')) returns contents of editEventType as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function editEventType_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editEventType (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function editEventValue_Callback(hObject, eventdata, handles)
-% hObject    handle to editEventValue (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of editEventValue as text
-%        str2double(get(hObject,'String')) returns contents of editEventValue as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function editEventValue_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editEventValue (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function editPrestim_Callback(hObject, eventdata, handles)
-% hObject    handle to editPrestim (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of editPrestim as text
-%        str2double(get(hObject,'String')) returns contents of editPrestim as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function editPrestim_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editPrestim (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function editPoststim_Callback(hObject, eventdata, handles)
-% hObject    handle to editPoststim (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of editPoststim as text
-%        str2double(get(hObject,'String')) returns contents of editPoststim as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function editPoststim_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editPoststim (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
 
 % --- Executes on button press in btnOk.
 function btnOk_Callback(hObject, eventdata, handles)
@@ -243,24 +153,12 @@ seltype = get(gcf,'selectiontype'); % Right-or-left click?
 switch seltype
     case 'alt'
     case 'normal'
+        set(handles.listboxEventValue,'Value',1);
         set(handles.listboxEventValue,'String',listEventValue{get(hObject,'Value')});
     otherwise
         eventType = get(handles.listboxEventType,'String');
         eventType = eventType(get(handles.listboxEventType,'Value'));
         set(handles.editEventType,'String',eventType);
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function listboxEventType_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to listboxEventType (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: listbox controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
 end
 
 
@@ -286,18 +184,6 @@ switch seltype
         set(handles.editEventValue,'String',eventValue);
 end
 
-% --- Executes during object creation, after setting all properties.
-function listboxEventValue_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to listboxEventValue (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: listbox controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
 
 % --- Executes when user attempts to close figure1.
 function figure1_CloseRequestFcn(hObject, eventdata, handles)
@@ -313,12 +199,6 @@ else
 % The GUI is no longer waiting, just close it
     delete(hObject);
 end
-
-% --------------------------------------------------------------------
-function menuEventType_Callback(hObject, eventdata, handles)
-% hObject    handle to menuEventType (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 
 % --------------------------------------------------------------------
@@ -338,10 +218,5 @@ function setEventValue_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 eventValue = get(handles.listboxEventValue,'String');
 eventValue = eventValue(get(handles.listboxEventValue,'Value'));
+set(handles.editEventValue,'Value',1);
 set(handles.editEventValue,'String',eventValue);
-
-% --------------------------------------------------------------------
-function menuEventValue_Callback(hObject, eventdata, handles)
-% hObject    handle to menuEventValue (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)

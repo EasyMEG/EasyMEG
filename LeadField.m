@@ -154,7 +154,7 @@ idx = get(hObject,'Value');
 data = dataSet{idx};
 
 dataList = fieldnames(data);
-
+set(handles.popHeadmodelData,'Value',1);
 set(handles.popHeadmodelData,'String',dataList);
 
 
