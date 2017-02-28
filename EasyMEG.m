@@ -70,23 +70,19 @@ global FieldTripPath;
 dataSet = [];
 currentData = 0;
 
-axes(handles.axes);
-set(gca,'xtickLabel',[],'ytickLabel',[],'tickLength',[0 0]);
-hImage=imshow('./FrontPage.png');
-set(hImage,'ButtonDownFcn',@picButtonDownFcn);
-
-updateWindow(handles);
-
 % usercfg
 EasyMEGPath = mfilename('fullpath');
 EasyMEGPath = fileparts(EasyMEGPath);
 cd(EasyMEGPath);
-path(path, './external/inifile/');
+
+path(path, fullfile(EasyMEGPath,'./external/inifile/'));
+path(path, fullfile(EasyMEGPath,'./functions/'));
 try
     key = {'','','FieldTripPath',''};
     cfgFilePath = fullfile(EasyMEGPath,'config.ini');
     readsett = inifile(cfgFilePath,'read',key);
     FieldTripPath = readsett{1};
+
     path(path,FieldTripPath);
     ft_defaults;
 catch
@@ -102,6 +98,13 @@ catch
         ft_defaults;
     end
 end
+
+axes(handles.axes);
+set(gca,'xtickLabel',[],'ytickLabel',[],'tickLength',[0 0]);
+hImage=imshow('./resources/FrontPage.png');
+set(hImage,'ButtonDownFcn',@picButtonDownFcn);
+
+updateWindow(handles);
     
 
 % --- Outputs from this function are returned to the command line.
