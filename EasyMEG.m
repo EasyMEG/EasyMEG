@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 24-Feb-2017 15:46:19
+% Last Modified by GUIDE v2.5 28-Feb-2017 16:23:55
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -69,6 +69,11 @@ global FieldTripPath;
 
 dataSet = [];
 currentData = 0;
+
+axes(handles.axes);
+set(gca,'xtickLabel',[],'ytickLabel',[],'tickLength',[0 0]);
+hImage=imshow('./FrontPage.png');
+set(hImage,'ButtonDownFcn',@picButtonDownFcn);
 
 updateWindow(handles);
 
@@ -347,6 +352,10 @@ function dispWait(handles)
 % handles    structure with handles and user data (see GUIDATA)
 set(handles.panelMain,'Title','Processing...');
 
+set(handles.panelMain,'Visible','On');
+set(handles.panelFrontPage,'Visible','Off');
+set(handles.figure1,'Color',get(handles.panelMain,'BackgroundColor'));
+
 set(handles.text11, 'String','');                               set(handles.text12, 'String','');
 set(handles.text21, 'String','');                               set(handles.text22, 'String','');
 set(handles.text31, 'String','Please wait');                    set(handles.text32, 'String','');
@@ -368,20 +377,18 @@ global currentData;
 
 % display info on the main window
 if isempty(dataSet)
-    set(handles.panelMain,'Title','Please load or import data');
-    set(handles.text11, 'String','');set(handles.text12, 'String','');
-    set(handles.text21, 'String','');set(handles.text22, 'String','');
-    set(handles.text31, 'String','');set(handles.text32, 'String','');
-    set(handles.text41, 'String','');set(handles.text42, 'String','');
-    set(handles.text51 ,'String','');set(handles.text52, 'String','');
-    set(handles.text61 ,'String','');set(handles.text62, 'String','');
-    set(handles.text71 ,'String','');set(handles.text72, 'String','');
-    set(handles.text81 ,'String','');set(handles.text82, 'String','');
-    set(handles.text91 ,'String','');set(handles.text92, 'String','');
+    
+    set(handles.panelMain,'Visible','Off');
+    set(handles.panelFrontPage,'Visible','On');
+    set(handles.figure1,'Color',get(handles.panelFrontPage,'BackgroundColor'));
 
 else
     data = dataSet{currentData}.data;
     dataName = dataSet{currentData}.name;
+    
+    set(handles.panelMain,'Visible','On');
+    set(handles.panelFrontPage,'Visible','Off');
+    set(handles.figure1,'Color',get(handles.panelMain,'BackgroundColor'));
     
     set(handles.panelMain,'Title',strcat('Dataset  #',num2str(currentData),'  --',dataName));
     set(handles.text11, 'String','');                   set(handles.text12, 'String','');
@@ -2419,3 +2426,11 @@ catch ep
 end
 
 updateWindow(handles);
+
+
+% --- Executes on mouse press over axes background.
+function picButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to axes (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+web('http://easymeg.github.io','-browser');
