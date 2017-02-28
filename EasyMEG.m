@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 28-Feb-2017 16:23:55
+% Last Modified by GUIDE v2.5 28-Feb-2017 19:12:57
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -2437,3 +2437,48 @@ function picButtonDownFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 web('http://easymeg.github.io','-browser');
+
+
+% --------------------------------------------------------------------
+function menuBaselinCorrection_Callback(hObject, eventdata, handles)
+% hObject    handle to menuBaselinCorrection (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet
+global currentData
+
+cfg = BaselineCorrection();
+
+if ~isempty(cfg)
+    dispWait(handles);
+    try
+        data = dataSet{currentData}.data;
+        data = ft_preprocessing(cfg,data);
+        dataSet{currentData}.data = data;
+    catch ep
+        ed = errordlg(ep.message,'Error');
+        waitfor(ed);
+    end
+    updateWindow(handles);
+end
+
+
+% --------------------------------------------------------------------
+function menuDetrend_Callback(hObject, eventdata, handles)
+% hObject    handle to menuDetrend (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet
+global currentData
+cfg = [];
+cfg.detrend = 'yes';
+dispWait(handles)
+try
+    data = dataSet{currentData}.data;
+    data = ft_preprocessing(cfg,data);
+    dataSet{currentData}.data = data;
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
+updateWindow(handles);
