@@ -2229,7 +2229,7 @@ end
 
 dispWait(handles);
 
-%try
+try
     % Source Analysis: Contrast conA & conB
 
     sourceAll = ft_sourceanalysis(cfg, whole);
@@ -2263,10 +2263,10 @@ dispWait(handles);
     dataSet{size(dataSet,2)+1} = newdata;
     currentData = size(dataSet,2);
     
-% catch ep
-%     ed = errordlg(ep.message,'Error');
-%     waitfor(ed);
-% end
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
 
 updateWindow(handles);
 

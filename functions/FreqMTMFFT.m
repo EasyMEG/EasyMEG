@@ -144,7 +144,9 @@ if ~isempty(get(handles.editTapSmoFrq,'String'))
     cfg.tapsmofrq   = eval(get(handles.editTapSmoFrq,'String'));
 end
 
-cfg.taper       = eval(get(handles.editTaper,'String'));
+if ~isempty(get(handles.editTaper,'String'))
+    cfg.taper       = eval(get(handles.editTaper,'String'));
+end
 
 if get(handles.rbtnFoiBand,'Value')
     cfg.foilim = eval(get(handles.editFoiBand,'String'));

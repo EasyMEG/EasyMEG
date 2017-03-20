@@ -101,6 +101,7 @@ cfg = [];
 layout                = get(handles.popLayout,'String');
 cfg.layout            = layout{get(handles.popLayout,'Value')};
 cfg.xlim              = eval(get(handles.editXlim,'String'));
+cfg.ylim              = eval(get(handles.editYlim,'String'));
 cfg.zlim              = eval(get(handles.editZlim,'String'));
 cfg.fontsize          = eval(get(handles.editFontSize,'String'));
 cfg.linewidth         = eval(get(handles.editLineWidth,'String'));
