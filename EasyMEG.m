@@ -22,7 +22,7 @@ function varargout = EasyMEG(varargin)
 
 % Edit the above text to modify the response to help EasyMEG
 
-% Last Modified by GUIDE v2.5 28-Feb-2017 19:12:57
+% Last Modified by GUIDE v2.5 20-Mar-2017 16:13:41
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1818,13 +1818,13 @@ for i = 2:length(dataPlot)
 end
 
 
-%try
+try
     figure;
     eval(['ft_multiplotER(cfg,',strDataPlot,');']);
-% catch ep
-%     ed = errordlg(ep.message,'Error');
-%     waitfor(ed);
-% end
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
 
 updateWindow(handles);
 
@@ -1893,13 +1893,13 @@ disp(dataName)
 disp(['dataSet{idx}.',dataName]);
 data = eval(['dataSet{idx}.',dataName]);
 
-%try
+try
     figure;
     ft_topoplotER(cfg,data);
-% catch ep
-%     ed = errordlg(ep.message,'Error');
-%     waitfor(ed);
-% end
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
 
 updateWindow(handles);
 
@@ -2481,4 +2481,119 @@ catch ep
     ed = errordlg(ep.message,'Error');
     waitfor(ed);
 end
+updateWindow(handles);
+
+
+% --------------------------------------------------------------------
+function menuFT_SinglePlotTFR_Callback(hObject, eventdata, handles)
+% hObject    handle to menuFT_SinglePlotTFR (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+
+[cfg,data] = SinglePlotTFR();
+if isempty(data)
+    if isempty(cfg)&&isempty(data)
+        return
+    end
+    ed = warndlg('No data in Plot List, ploting cancel.','Error');
+    waitfor(ed);
+    return
+end
+
+dispWait(handles);
+
+dataPlot = [];
+for i = 1:size(data,1)
+    dataPlot{i} = eval(['dataSet{data{i,1}}.',data{i,2}]);
+end
+
+strDataPlot = 'dataPlot{1}';
+for i = 2:length(dataPlot)
+    strDataPlot = [strDataPlot,',dataPlot{',num2str(i),'}'];
+end
+
+
+%try
+    figure;
+    eval(['ft_singleplotTFR(cfg,',strDataPlot,');']);
+% catch ep
+%     ed = errordlg(ep.message,'Error');
+%     waitfor(ed);
+% end
+
+updateWindow(handles);
+
+
+
+% --------------------------------------------------------------------
+function menuFT_multiplotTFR_Callback(hObject, eventdata, handles)
+% hObject    handle to menuFT_multiplotTFR (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+
+[cfg,data] = MultiPlotTFR();
+if isempty(data)
+    if isempty(cfg)&&isempty(data)
+        return
+    end
+    ed = warndlg('No data in Plot List, ploting cancel.','Error');
+    waitfor(ed);
+    return
+end
+
+dispWait(handles);
+
+dataPlot = [];
+for i = 1:size(data,1)
+    dataPlot{i} = eval(['dataSet{data{i,1}}.',data{i,2}]);
+end
+
+strDataPlot = 'dataPlot{1}';
+for i = 2:length(dataPlot)
+    strDataPlot = [strDataPlot,',dataPlot{',num2str(i),'}'];
+end
+
+
+try
+    figure;
+    eval(['ft_multiplotTFR(cfg,',strDataPlot,');']);
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
+
+updateWindow(handles);
+
+
+% --------------------------------------------------------------------
+function menuFT_topoplotTFR_Callback(hObject, eventdata, handles)
+% hObject    handle to menuFT_topoplotTFR (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataSet;
+
+[cfg,idx,dataName] = TopoPlotTFR();
+if isempty(idx)
+    if isempty(cfg)&&isempty(idx)&&isempty(dataName)
+        return
+    end
+    
+    ed = warndlg('No data in Plot List, ploting cancel.','Error');
+    waitfor(ed);
+    return
+end
+disp(dataName)
+disp(['dataSet{idx}.',dataName]);
+data = eval(['dataSet{idx}.',dataName]);
+
+try
+    figure;
+    ft_topoplotTFR(cfg,data);
+catch ep
+    ed = errordlg(ep.message,'Error');
+    waitfor(ed);
+end
+
 updateWindow(handles);

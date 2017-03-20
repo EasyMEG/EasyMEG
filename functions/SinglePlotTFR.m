@@ -1,35 +1,35 @@
-function varargout = MultiPlotER(varargin)
-% MULTIPLOTER MATLAB code for MultiPlotER.fig
-%      MULTIPLOTER, by itself, creates a new MULTIPLOTER or raises the existing
+function varargout = SinglePlotTFR(varargin)
+% SinglePlotTFR MATLAB code for SinglePlotTFR.fig
+%      SinglePlotTFR, by itself, creates a new SinglePlotTFR or raises the existing
 %      singleton*.
 %
-%      H = MULTIPLOTER returns the handle to a new MULTIPLOTER or the handle to
+%      H = SinglePlotTFR returns the handle to a new SinglePlotTFR or the handle to
 %      the existing singleton*.
 %
-%      MULTIPLOTER('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in MULTIPLOTER.M with the given input arguments.
+%      SinglePlotTFR('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in SinglePlotTFR.M with the given input arguments.
 %
-%      MULTIPLOTER('Property','Value',...) creates a new MULTIPLOTER or raises the
+%      SinglePlotTFR('Property','Value',...) creates a new SinglePlotTFR or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before MultiPlotER_OpeningFcn gets called.  An
+%      applied to the GUI before SinglePlotTFR_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to MultiPlotER_OpeningFcn via varargin.
+%      stop.  All inputs are passed to SinglePlotTFR_OpeningFcn via varargin.
 %
 %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
 %      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help MultiPlotER
+% Edit the above text to modify the response to help SinglePlotTFR
 
-% Last Modified by GUIDE v2.5 08-Dec-2016 17:01:28
+% Last Modified by GUIDE v2.5 20-Mar-2017 15:27:29
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @MultiPlotER_OpeningFcn, ...
-                   'gui_OutputFcn',  @MultiPlotER_OutputFcn, ...
+                   'gui_OpeningFcn', @SinglePlotTFR_OpeningFcn, ...
+                   'gui_OutputFcn',  @SinglePlotTFR_OutputFcn, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -44,15 +44,15 @@ end
 % End initialization code - DO NOT EDIT
 
 
-% --- Executes just before MultiPlotER is made visible.
-function MultiPlotER_OpeningFcn(hObject, eventdata, handles, varargin)
+% --- Executes just before SinglePlotTFR is made visible.
+function SinglePlotTFR_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to MultiPlotER (see VARARGIN)
+% varargin   command line arguments to SinglePlotTFR (see VARARGIN)
 
-% Choose default command line output for MultiPlotER
+% Choose default command line output for SinglePlotTFR
 handles.output = hObject;
 handles.cfg = [];
 handles.data = [];
@@ -72,12 +72,12 @@ data = dataSet{1};
 dataList = fieldnames(data);
 set(handles.listData,'String',dataList);
 
-% UIWAIT makes MultiPlotER wait for user response (see UIRESUME)
+% UIWAIT makes SinglePlotTFR wait for user response (see UIRESUME)
 uiwait(handles.figure1);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = MultiPlotER_OutputFcn(hObject, eventdata, handles) 
+function varargout = SinglePlotTFR_OutputFcn(hObject, eventdata, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -106,7 +106,6 @@ data = dataSet{idx};
 dataList = fieldnames(data);
 set(handles.listData,'Value',1);
 set(handles.listData,'String',dataList);
-
 
 
 
@@ -171,34 +170,30 @@ function btnPlot_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 cfg = [];
-layout           = get(handles.popLayout,'String');
-cfg.layout       = layout{get(handles.popLayout,'Value')};
+
 maskstyle        = get(handles.popMaskStyle,'String');
 cfg.maskstyle    = maskstyle{get(handles.popMaskStyle,'Value')};
 cfg.xlim         = eval(get(handles.editHlim,'String'));
 cfg.ylim         = eval(get(handles.editVlim,'String'));
+cfg.zlim         = eval(get(handles.editZlim,'String'));
 cfg.fontsize     = eval(get(handles.editFontSize,'String'));
 cfg.linewidth    = eval(get(handles.editLineWidth,'String'));
 cfg.baseline     = eval(get(handles.editBaseline,'String'));
 baselinetype     = get(handles.popBaselineType,'String');
 cfg.baselinetype = baselinetype{get(handles.popBaselineType,'Value')};
-showlabels     = get(handles.popShowLabels,'String');
-cfg.showlabels = showlabels{get(handles.popShowLabels,'Value')};
-showoutline     = get(handles.popShowOutline,'String');
-cfg.showoutline = showoutline{get(handles.popShowOutline,'Value')};
-cfg.linestyle    = eval(get(handles.editLineStyle,'String'));
+colormap     = get(handles.popColormap,'String');
+cfg.colormap = eval(colormap{get(handles.popColormap,'Value')});
+
 
 switch get(handles.popParameter,'Value')
     case 1
     case 2
-        cfg.parameter = 'avg';
-    case 3
         cfg.parameter = 'powspctrm';
-    case 4
+    case 3
         cfg.parameter = 'cohspctrm';
 end
 
-cfg.channel  = eval(get(handles.editChannels,'String'));
+cfg.channel = eval(get(handles.editChannels,'String'));
 cfg.trials   = eval(get(handles.editTrials,'String'));
 
 handles.cfg = cfg;
